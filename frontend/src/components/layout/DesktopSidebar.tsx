@@ -23,25 +23,25 @@ export function DesktopSidebar() {
   const currentHash = useNavigationStore((state) => state.currentHash);
 
   return (
-    <aside className="hidden fixed left-6 top-6 bottom-6 w-108 shrink-0 flex-col rounded-[20px] bg-white px-8 py-8 shadow-[0_30px_110px_rgba(0,0,0,0.16)] md:flex">
+    <aside className="hidden fixed left-5 top-5 bottom-5 w-[320px] shrink-0 flex-col rounded-[20px] bg-white px-6 py-6 shadow-[0_30px_110px_rgba(0,0,0,0.16)] lg:w-[340px] xl:w-[360px] md:flex">
       <Link 
         href={`${routes.dashboard}#home`} 
-        className="flex items-center gap-4" 
+        className="flex items-center gap-3" 
         onClick={() => useNavigationStore.getState().setHash('#home')}
       >
         <LogoMark />
-        <span className="text-[38px] font-bold tracking-[-0.06em] text-[#2b2d2f] leading-none">VedaAI</span>
+        <span className="text-[31px] font-bold tracking-[-0.06em] text-[#2b2d2f] leading-none xl:text-[34px]">VedaAI</span>
       </Link>
 
       <Link
         href={routes.createAssignment}
-        className="mt-20 flex h-18 items-center justify-center gap-4 rounded-[36px] border-[5px] border-[#f07a56] bg-[#202123] text-2xl font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition hover:bg-[#111]"
+        className="mt-14 flex h-14 items-center justify-center gap-3 rounded-[36px] border-[4px] border-[#f07a56] bg-[#202123] text-lg font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition hover:bg-[#111] xl:mt-16 xl:h-15 xl:text-xl"
       >
         <SparkleIcon />
         Create Assignment
       </Link>
 
-      <nav className="mt-20 grid gap-3 text-[22px] font-medium text-[#858585]">
+      <nav className="mt-14 grid gap-2 text-[17px] font-medium text-[#858585] xl:mt-16 xl:text-[19px]">
         {navItems.map((item) => {
           const itemHash = item.href.split("#")[1];
           const isActive = currentHash === `#${itemHash}`;
@@ -51,7 +51,7 @@ export function DesktopSidebar() {
               key={item.label}
               href={item.href}
               onClick={() => useNavigationStore.getState().setHash(`#${itemHash}`)}
-              className={`flex h-14 items-center gap-4 rounded-[10px] px-6 transition hover:bg-[#f3f3f3] ${
+              className={`flex h-11 items-center gap-3 rounded-[10px] px-4 transition hover:bg-[#f3f3f3] xl:h-12 ${
                 isActive ? "bg-[#eeeeee] font-bold text-[#2c2c2c]" : ""
               }`}
             >
@@ -65,7 +65,7 @@ export function DesktopSidebar() {
       <div className="mt-auto">
         <Link 
           href={`${routes.dashboard}#settings`} 
-          className="flex h-14 items-center gap-4 px-5 text-[22px] font-medium text-[#858585]" 
+          className="flex h-11 items-center gap-3 px-4 text-[17px] font-medium text-[#858585] xl:text-[19px]" 
           onClick={() => useNavigationStore.getState().setHash('#settings')}
         >
           <NavGlyph type="settings" />
@@ -73,13 +73,13 @@ export function DesktopSidebar() {
         </Link>
         <Link 
           href={`${routes.dashboard}#profile`} 
-          className="mt-6 flex items-center gap-4 rounded-[18px] bg-[#eeeeee] p-4 transition hover:bg-[#e7e7e7]" 
+          className="mt-4 flex items-center gap-3 rounded-[18px] bg-[#eeeeee] p-3 transition hover:bg-[#e7e7e7]" 
           onClick={() => useNavigationStore.getState().setHash('#profile')}
         >
           <Avatar />
           <div>
-            <p className="text-[22px] font-bold text-[#2c2c2c]">Delhi Public School</p>
-            <p className="mt-1 text-[17px] font-medium text-[#6f6f6f]">Bokaro Steel City</p>
+            <p className="text-[17px] font-bold text-[#2c2c2c] xl:text-[18px]">Delhi Public School</p>
+            <p className="mt-1 text-sm font-medium text-[#6f6f6f]">Bokaro Steel City</p>
           </div>
         </Link>
       </div>

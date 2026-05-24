@@ -28,7 +28,7 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
 
   return (
     <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden">
-      <div className="ml-auto flex h-full w-[82%] max-w-90 flex-col bg-white p-6 shadow-2xl">
+      <div className="ml-auto flex h-full w-[82%] max-w-85 flex-col bg-white p-5 shadow-2xl">
         <div className="flex items-center justify-between">
           <Link
             href={`${routes.dashboard}#home`}
@@ -38,13 +38,13 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
             <div className="flex h-9 w-9 items-center justify-center flex-shrink-0">
               <LogoMark />
             </div>
-            <span className="text-2xl font-bold tracking-tighter text-[#2b2d2f] leading-tight">
+            <span className="text-xl font-bold tracking-tighter text-[#2b2d2f] leading-tight">
               VedaAI
             </span>
           </Link>
           <button
             aria-label="Close menu"
-            className="text-3xl text-[#333] hover:text-black transition"
+            className="text-2xl text-[#333] hover:text-black transition"
             onClick={onClose}
           >
             x
@@ -54,13 +54,13 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
         <Link
           href={routes.createAssignment}
           onClick={onClose}
-          className="mt-8 flex h-14 items-center justify-center gap-3 rounded-full bg-[#171819] text-lg font-bold text-white hover:bg-[#2a2b2c] transition"
+          className="mt-7 flex h-12 items-center justify-center gap-3 rounded-full bg-[#171819] text-base font-bold text-white hover:bg-[#2a2b2c] transition"
         >
           <SparkleIcon />
           Create Assignment
         </Link>
 
-        <nav className="mt-8 grid gap-2 text-lg font-semibold text-[#666]">
+        <nav className="mt-7 grid gap-2 text-base font-semibold text-[#666]">
           {navItems.map((item) => {
             const itemHash = item.href.split("#")[1];
             const isActive = currentHash === `#${itemHash}`;
@@ -73,7 +73,7 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
                   useNavigationStore.getState().setHash(`#${itemHash}`);
                   onClose();
                 }}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
+                className={`flex items-center gap-3 rounded-2xl px-4 py-2.5 transition ${
                   isActive ? "bg-[#eeeeee] text-[#2c2c2c]" : ""
                 }`}
               >
@@ -91,7 +91,7 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
               useNavigationStore.getState().setHash('#settings');
               onClose();
             }}
-            className="flex items-center gap-3 rounded-lg px-4 py-2 text-lg font-semibold text-[#666] transition hover:bg-[#f3f3f3]"
+            className="flex items-center gap-3 rounded-lg px-4 py-2 text-base font-semibold text-[#666] transition hover:bg-[#f3f3f3]"
           >
             <NavGlyph type="settings" />
             Settings

@@ -24,12 +24,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <DesktopSidebar />
 
         {/* Main Content Area */}
-        <div className="ml-120 flex flex-col gap-6 p-6">
+        <div className="ml-[365px] flex flex-col gap-5 p-5 lg:ml-[385px] xl:ml-[405px]">
           {/* Desktop Navbar - Top (Fixed) */}
           <DesktopNavbar />
 
           {/* Main Content */}
-          <main className="relative flex flex-1 flex-col rounded-[20px] px-8 py-8 pt-32">
+          <main className="relative flex flex-1 flex-col rounded-[20px] px-5 py-6 pt-24 lg:px-6 xl:px-8">
             {children}
           </main>
         </div>
@@ -41,7 +41,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <MobileNavbar onMenuOpen={() => setMobileMenuOpen(true)} />
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col px-5 pt-32 pb-32">
+        <main className="flex-1 flex flex-col px-5 pt-28 pb-30">
           {children}
         </main>
 

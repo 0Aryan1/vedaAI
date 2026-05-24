@@ -4,14 +4,14 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold text-[#2c2c2c]">Settings</h1>
+        <h1 className="text-3xl font-bold text-[#2c2c2c]">Settings</h1>
         <p className="mt-2 text-gray-600">Manage your account settings and preferences</p>
       </div>
 
       <div className="space-y-6">
         {/* Account Settings */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-[#2c2c2c]">Account Settings</h2>
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-[#2c2c2c]">Account Settings</h2>
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between border-b border-gray-200 py-4">
               <div>
@@ -35,8 +35,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Notification Settings */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-[#2c2c2c]">Notifications</h2>
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-[#2c2c2c]">Notifications</h2>
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between py-4">
               <div>
@@ -56,8 +56,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Danger Zone */}
-        <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-8">
-          <h2 className="text-2xl font-bold text-red-900">Danger Zone</h2>
+        <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6">
+          <h2 className="text-xl font-bold text-red-900">Danger Zone</h2>
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>

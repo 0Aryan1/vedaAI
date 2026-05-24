@@ -8,7 +8,7 @@ import { useAssignmentStore } from "@/store";
 
 function EmptyAssignmentsIllustration() {
   return (
-    <div className="relative mx-auto h-70 w-75 sm:h-85 sm:w-90 md:h-95 md:w-100">
+    <div className="relative mx-auto h-58 w-64 sm:h-72 sm:w-78 md:h-80 md:w-88">
       <Image
         src="/icons/Illustration found.svg"
         alt="No assignments illustration"
@@ -22,17 +22,17 @@ function EmptyAssignmentsIllustration() {
 function EmptyAssignments() {
   return (
     <section className="flex flex-1 items-center justify-center">
-      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
         <EmptyAssignmentsIllustration />
-        <h1 className="mt-8 text-3xl font-bold text-[#2e3033] sm:text-4xl">
+        <h1 className="mt-5 text-2xl font-bold text-[#2e3033] sm:text-3xl">
           No assignments yet
         </h1>
-        <p className="mt-4 max-w-xl text-base text-[#888] sm:text-lg">
+        <p className="mt-3 max-w-lg text-sm leading-6 text-[#888] sm:text-base">
           Create your first assignment to start collecting and grading student submissions. You can set up rubrics, define marking criteria, and let AI assist with grading.
         </p>
         <Link
           href={routes.createAssignment}
-          className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#1a1a1a] px-8 text-base font-semibold text-white transition hover:bg-[#333] sm:h-14 sm:px-10 sm:text-lg"
+          className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#1a1a1a] px-7 text-sm font-semibold text-white transition hover:bg-[#333] sm:h-12 sm:px-8 sm:text-base"
         >
           <svg aria-hidden="true" className="size-5 sm:size-6" fill="none" viewBox="0 0 24 24">
             <path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
@@ -48,11 +48,11 @@ function AssignmentsList() {
   const assignments = useAssignmentStore((state) => state.assignments);
 
   return (
-    <section className="mx-auto w-full max-w-5xl pt-10 md:pt-16">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="mx-auto w-full max-w-5xl pt-6 md:pt-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-[#999]">Assignments</p>
-          <h1 className="mt-2 text-4xl font-extrabold tracking-tighter text-[#2e3033]">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tighter text-[#2e3033]">
             Your assignments
           </h1>
         </div>

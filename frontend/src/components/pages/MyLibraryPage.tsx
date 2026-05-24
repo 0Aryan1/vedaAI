@@ -3,9 +3,9 @@
 export default function MyLibraryPage() {
   return (
     <section className="flex flex-1 flex-col">
-      <div className="mb-8">
+      <div className="mb-6">
         <p className="text-sm font-bold uppercase tracking-wide text-[#999]">Resources</p>
-        <h1 className="mt-2 text-4xl font-extrabold tracking-tighter text-[#2e3033]">
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tighter text-[#2e3033]">
           My Library
         </h1>
       </div>
@@ -20,9 +20,9 @@ export default function MyLibraryPage() {
         </div>
       </div> */}
 
-      <div className="mt-8">
+      <div className="mt-6">
         {/* <h2 className="text-2xl font-bold text-[#2e3033]">Your Resources</h2> */}
-        <div className="mt-4 rounded-2xl border border-[#e8e8e8] p-6 text-center">
+        <div className="mt-4 rounded-2xl border border-[#e8e8e8] p-5 text-center">
           <p className="text-[#999]">No resources added yet</p>
         </div>
       </div>

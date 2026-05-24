@@ -36,12 +36,12 @@ export function DesktopNavbar() {
   const showBackButton = currentHash !== "#home";
 
   return (
-    <header className="hidden fixed top-6 right-6 left-120 h-20 z-10 items-center justify-between rounded-[20px] bg-white/88 px-9 shadow-[0_30px_110px_rgba(0,0,0,0.16)] md:flex">
-      <div className="flex items-center gap-5">
+    <header className="hidden fixed left-[365px] right-5 top-5 z-10 h-16 items-center justify-between rounded-[20px] bg-white/88 px-6 shadow-[0_30px_110px_rgba(0,0,0,0.16)] md:flex lg:left-[385px] xl:left-[405px]">
+      <div className="flex items-center gap-4">
         {showBackButton ? (
           <button
             aria-label="Go back"
-            className="flex size-14 items-center justify-center rounded-full bg-white text-[#2a2b2d] transition hover:bg-[#f5f5f5]"
+            className="flex size-11 items-center justify-center rounded-full bg-white text-[#2a2b2d] transition hover:bg-[#f5f5f5]"
             onClick={() => router.back()}
           >
             <Image 
@@ -49,7 +49,7 @@ export function DesktopNavbar() {
               alt="Back arrow" 
               width={24} 
               height={24}
-              className="w-6 h-6"
+              className="h-5 w-5"
             />
           </button>
         ) : null}
@@ -59,20 +59,20 @@ export function DesktopNavbar() {
             alt="Home icon" 
             width={20} 
             height={20}
-            className="w-5 h-5"
+            className="h-5 w-5"
           />
-          <span className="text-2xl font-semibold text-[#a4a4a4]">{getSectionTitle()}</span>
+          <span className="text-xl font-semibold text-[#a4a4a4] xl:text-[22px]">{getSectionTitle()}</span>
         </div>
       </div>
-      <div className="relative flex items-center gap-5">
+      <div className="relative flex items-center gap-4">
         <BellButton onClick={() => setOpenDropdown(openDropdown === "notifications" ? null : "notifications")} />
         <Avatar />
         <button
-          className="flex items-center gap-3 text-2xl font-bold text-[#2a2b2d]"
+          className="flex items-center gap-2 text-lg font-bold text-[#2a2b2d] xl:text-xl"
           onClick={() => setOpenDropdown(openDropdown === "profile" ? null : "profile")}
         >
           <span>John Doe</span>
-          <svg aria-hidden="true" className="size-6" fill="none" viewBox="0 0 24 24">
+          <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
             <path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
           </svg>
         </button>

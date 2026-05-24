@@ -12,7 +12,7 @@ export function LogoMark() {
       alt="VedaAI Logo"
       width={48}
       height={48}
-      className="h-12 w-12 md:h-16 md:w-16"
+      className="h-11 w-11 md:h-12 md:w-12 xl:h-14 xl:w-14"
       priority
     />
   );
@@ -23,14 +23,14 @@ export function BellButton({ onClick }: { onClick: () => void }) {
     <button
       aria-label="Open notifications"
       onClick={onClick}
-      className="relative flex size-14 items-center justify-center rounded-full bg-white/70 transition hover:bg-white"
+      className="relative flex size-11 items-center justify-center rounded-full bg-white/70 transition hover:bg-white xl:size-12"
     >
-      <span className="absolute right-3 top-2 size-3 rounded-full bg-[#ff5a2f]" />
+      <span className="absolute right-2.5 top-2 size-2.5 rounded-full bg-[#ff5a2f]" />
       <Image
         src="/icons/BellIcon.svg"
         alt="Notifications"
-        width={28}
-        height={28}
+        width={24}
+        height={24}
       />
     </button>
   );
@@ -38,7 +38,7 @@ export function BellButton({ onClick }: { onClick: () => void }) {
 
 export function Avatar() {
   return (
-    <span className="flex size-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffd4c4_0%,#f28b6c_44%,#1f2933_45%,#111827_100%)] text-sm font-bold text-white">
+    <span className="flex size-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffd4c4_0%,#f28b6c_44%,#1f2933_45%,#111827_100%)] text-xs font-bold text-white xl:size-12">
       JD
     </span>
   );
@@ -49,7 +49,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
   const completed = assignments.filter((assignment) => assignment.status === "completed").length;
 
   return (
-    <div className="absolute right-0 top-17.5 z-30 w-77.5 rounded-[18px] bg-white p-5 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+    <div className="absolute right-0 top-14 z-30 w-72 rounded-[18px] bg-white p-4 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-[#2c2c2c]">Notifications</h2>
         <button aria-label="Close notifications" className="text-[#777]" onClick={onClose}>
@@ -66,7 +66,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
 
 export function ProfileMenu({ onClose }: { onClose: () => void }) {
   return (
-    <div className="absolute right-0 top-17.5 z-30 w-65 rounded-[18px] bg-white p-4 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+    <div className="absolute right-0 top-14 z-30 w-60 rounded-[18px] bg-white p-4 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
       <div className="flex items-center gap-3 border-b border-[#ececec] pb-4">
         <Avatar />
         <div>
@@ -105,8 +105,8 @@ export function SparkleIcon() {
     <Image
       src="/icons/star.svg"
       alt="Create"
-      width={28}
-      height={28}
+      width={22}
+      height={22}
     />
   );
 }
@@ -130,8 +130,8 @@ export function NavGlyph({ type }: { type: string }) {
     <Image
       src={iconSrc}
       alt={type}
-      width={28}
-      height={28}
+      width={22}
+      height={22}
     />
   );
 }
