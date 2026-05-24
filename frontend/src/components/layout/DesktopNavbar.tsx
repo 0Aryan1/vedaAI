@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { routes } from "@/constants/routes";
 import { useNavigationStore, useUIStore } from "@/store";
 import { BellButton, Avatar, NotificationsPanel, ProfileMenu } from "./navbar-ui-clean";
@@ -22,18 +22,22 @@ const navItems: NavItem[] = [
 
 export function DesktopNavbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { openDropdown, setOpenDropdown } = useUIStore();
   const currentHash = useNavigationStore((state) => state.currentHash);
+  const isCreateAssignment = pathname === routes.createAssignment;
 
   // Get the current section title based on hash
   const getSectionTitle = () => {
+    if (isCreateAssignment) return "Assignment";
+
     const hashValue = currentHash.substring(1); // Remove the # character
     const item = navItems.find(nav => nav.href.includes(`#${hashValue}`));
     return item ? item.label : "Dashboard";
   };
 
   // Hide back button on home page
-  const showBackButton = currentHash !== "#home";
+  const showBackButton = isCreateAssignment || currentHash !== "#home";
 
   return (
     <header className="hidden fixed left-[365px] right-5 top-5 z-10 h-16 items-center justify-between rounded-[20px] bg-white/88 px-6 shadow-[0_30px_110px_rgba(0,0,0,0.16)] md:flex lg:left-[385px] xl:left-[405px]">

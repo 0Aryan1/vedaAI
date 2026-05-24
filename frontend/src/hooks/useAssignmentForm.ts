@@ -123,10 +123,17 @@ export function useAssignmentForm() {
   }
 
   function submit() {
-    if (!validate(draft)) return;
+    const valuesForSubmit: AssignmentFormValues = {
+      ...draft,
+      title: draft.title.trim() || "Create Assignment",
+      subject: draft.subject.trim() || "General",
+      className: draft.className.trim() || "General",
+    };
+
+    if (!validate(valuesForSubmit)) return;
 
     setIsGenerating(true);
-    const assignment = createAssignment(draft);
+    const assignment = createAssignment(valuesForSubmit);
 
     window.setTimeout(() => {
       updateStatus(assignment.id, "generating", 42, "Structuring prompt and section blueprint");
@@ -137,7 +144,7 @@ export function useAssignmentForm() {
     }, 1100);
 
     window.setTimeout(() => {
-      const paper = buildMockPaper(draft, assignment.id);
+      const paper = buildMockPaper(valuesForSubmit, assignment.id);
       savePaper(paper);
       updateStatus(assignment.id, "completed", 100, "Question paper ready", paper.id);
       resetDraft();

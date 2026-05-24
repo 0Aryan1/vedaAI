@@ -14,42 +14,50 @@ export function FileUpload({ fileName, error, onFileNameChange }: FileUploadProp
   }
 
   return (
-    <div className="grid gap-2 text-sm font-medium text-slate-800">
-      <label className="flex min-h-40 cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-slate-400 hover:bg-white">
+    <div className="grid gap-3 text-sm font-medium text-[#2d2d2d]">
+      <label className="flex min-h-[202px] cursor-pointer flex-col items-center justify-center rounded-[22px] border-2 border-dashed border-[#d0d0d0] bg-white px-4 py-8 text-center transition hover:border-[#b8b8b8] hover:bg-[#fbfbfb]">
         <input
           className="sr-only"
           type="file"
           accept=".pdf,.txt,.doc,.docx,.jpg,.jpeg,.png"
           onChange={handleChange}
         />
-        {/* Cloud Icon */}
-        <svg aria-hidden="true" className="size-10 text-slate-400" fill="none" viewBox="0 0 24 24">
+        <svg aria-hidden="true" className="size-8 text-[#2d2d2d]" fill="none" viewBox="0 0 24 24">
           <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
-            fill="currentColor"
+            d="M8.4 17.2H7.5a4.5 4.5 0 0 1-.5-8.97 5.8 5.8 0 0 1 11.2 1.55A3.7 3.7 0 0 1 17 17.2h-1"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2.2"
+          />
+          <path
+            d="M12 18.5v-7M8.8 14.1 12 10.9l3.2 3.2"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2.2"
           />
         </svg>
         
-        <div>
-          <span className="block text-sm font-semibold text-slate-900 sm:text-base">
+        <div className="mt-6">
+          <span className="block text-base font-semibold text-[#2d2d2d]">
             {fileName ?? "Choose a file or drag & drop it here"}
           </span>
-          <span className="mt-2 block text-xs text-slate-500">
+          <span className="mt-2 block text-sm font-medium text-[#a0a0a0]">
             JPEG, PNG, upto 10MB
           </span>
         </div>
 
         <button
           type="button"
-          className="mt-1 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+          className="mt-5 inline-flex h-9 items-center justify-center rounded-full bg-[#f4f4f4] px-7 text-sm font-medium text-[#2d2d2d] transition hover:bg-[#ececec]"
         >
           Browse Files
         </button>
-
-        <span className="mt-1 block text-xs text-slate-500">
-          Upload images of your preferred document/image
-        </span>
       </label>
+      <span className="block text-center text-base font-medium text-[#777]">
+        Upload images of your preferred document/image
+      </span>
       {error ? <span className="text-xs font-normal text-red-600">{error}</span> : null}
     </div>
   );
