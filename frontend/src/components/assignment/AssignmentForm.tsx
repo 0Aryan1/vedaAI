@@ -1,6 +1,5 @@
 "use client";
 
-import { FileUpload } from "@/components/assignment/FileUpload";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { useAssignmentForm } from "@/hooks/useAssignmentForm";
 import type { ReactNode } from "react";
@@ -130,38 +129,75 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
         </div>
 
         <div className="mt-7 grid gap-5 md:mt-9">
-          <div>
-            <FileUpload
-              fileName={values.uploadedFileName}
-              error={errors.sourceText}
-              onFileNameChange={(uploadedFileName) => updateDraft({ uploadedFileName })}
+          <div className="grid gap-3">
+            <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assignment-title">
+              Title
+            </label>
+            <input
+              id="assignment-title"
+              type="text"
+              placeholder="e.g Final Exam - Chemistry"
+              value={values.title}
+              onChange={(event) => updateDraft({ title: event.target.value })}
+              className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
             />
+            {errors.title ? <p className="text-xs text-red-600">{errors.title}</p> : null}
           </div>
 
-        <div className="grid gap-3">
-          <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assignment-due-date">
-            Due Date
-          </label>
-          <div className="relative">
+          <div className="grid gap-3">
+            <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assignment-subject">
+              Subject
+            </label>
             <input
-              id="assignment-due-date"
-              type="date"
-              value={values.dueDate}
-              onChange={(event) => updateDraft({ dueDate: event.target.value })}
-              className="h-11 w-full rounded-full border border-[#d9d9d9] bg-transparent px-4 pr-12 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
+              id="assignment-subject"
+              type="text"
+              placeholder="e.g Chemistry, Biology, etc."
+              value={values.subject}
+              onChange={(event) => updateDraft({ subject: event.target.value })}
+              className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
             />
-            <svg
-              aria-hidden="true"
-              className="pointer-events-none absolute right-5 top-1/2 size-5 -translate-y-1/2 text-[#2d2d2d]"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <rect x="4" y="5" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="2" />
-              <path d="M8 3v4M16 3v4M8 12h8M12 8v8" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-            </svg>
+            {errors.subject ? <p className="text-xs text-red-600">{errors.subject}</p> : null}
           </div>
-          {errors.dueDate ? <p className="text-xs text-red-600">{errors.dueDate}</p> : null}
-        </div>
+
+          <div className="grid gap-3">
+            <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assignment-grade">
+              Grade Level
+            </label>
+            <input
+              id="assignment-grade"
+              type="text"
+              placeholder="e.g 10th, 12th, University"
+              value={values.gradeLevel}
+              onChange={(event) => updateDraft({ gradeLevel: event.target.value })}
+              className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
+            />
+            {errors.gradeLevel ? <p className="text-xs text-red-600">{errors.gradeLevel}</p> : null}
+          </div>
+
+          <div className="grid gap-3">
+            <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assignment-due-date">
+              Due Date
+            </label>
+            <div className="relative">
+              <input
+                id="assignment-due-date"
+                type="date"
+                value={values.dueDate}
+                onChange={(event) => updateDraft({ dueDate: event.target.value })}
+                className="h-11 w-full rounded-full border border-[#d9d9d9] bg-transparent px-4 pr-12 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
+              />
+              <svg
+                aria-hidden="true"
+                className="pointer-events-none absolute right-5 top-1/2 size-5 -translate-y-1/2 text-[#2d2d2d]"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <rect x="4" y="5" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="2" />
+                <path d="M8 3v4M16 3v4M8 12h8M12 8v8" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+              </svg>
+            </div>
+            {errors.dueDate ? <p className="text-xs text-red-600">{errors.dueDate}</p> : null}
+          </div>
 
           <div className="grid gap-3">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_34px_114px_114px] md:items-center">
@@ -202,13 +238,13 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
         </div>
 
         <div className="grid gap-3">
-          <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="additional-info">
-            Additional Information (For better output)
+          <label className="text-base font-bold tracking-[-0.04em] text-[#2d2d2d]" htmlFor="assessment-requirements">
+            Assessment Requirements
           </label>
           <div className="relative">
             <textarea
-              id="additional-info"
-              placeholder="e.g Generate a question paper for 3 hour exam duration..."
+              id="assessment-requirements"
+              placeholder="Describe your assessment — e.g This is a 3-hour final exam for Grade 10 students covering chapters 1-5 of the textbook. Include topics like photosynthesis, cell division, and genetics."
               value={values.instructions}
               onChange={(event) => updateDraft({ instructions: event.target.value })}
               className="min-h-[102px] w-full resize-none rounded-[16px] border border-dashed border-[#dedede] bg-[#f6f6f6] px-4 py-4 pr-14 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#777] focus:border-[#c4c4c4]"

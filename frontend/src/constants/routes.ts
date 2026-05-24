@@ -4,4 +4,4 @@ export const routes = {
   createAssignment: "/assignments/create",
   assignment: (id: string) => `/assignments/${id}`,
   output: (id: string) => `/output/${id}`,
-};
+} as const

@@ -1,22 +1,25 @@
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type GeneratedQuestion = {
+export type Question = {
   id: string;
   text: string;
   type: string;
   difficulty: Difficulty;
   marks: number;
+  options?: string[] | null;
+  correctAnswer?: number | null;
 };
 
 export type QuestionSection = {
   id: string;
   title: string;
   instruction: string;
-  questions: GeneratedQuestion[];
+  questions: Question[];
 };
 
 export type QuestionPaper = {
   id: string;
+  _id: string;
   assignmentId: string;
   title: string;
   subject: string;
@@ -27,3 +30,5 @@ export type QuestionPaper = {
   sections: QuestionSection[];
   createdAt: string;
 };
+
+export type GeneratedQuestion = Question;

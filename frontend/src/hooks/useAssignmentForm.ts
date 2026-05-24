@@ -1,83 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { routes } from "@/constants/routes";
+import { assignmentApi, convertFormToPayload } from "@/lib/api/assignments";
+import { joinJobRoom } from "@/lib/socket/client";
 import { assignmentSchema } from "@/lib/validators/assignment.schema";
 import { useAssignmentStore } from "@/store";
 import type { AssignmentFormValues, QuestionConfig } from "@/types/assignment";
-import type { Difficulty, QuestionPaper, QuestionSection } from "@/types/question-paper";
 
 type FieldErrors = Partial<Record<keyof AssignmentFormValues | "form", string>>;
 
-const difficultyCycle: Difficulty[] = ["easy", "medium", "hard"];
-
-function sectionTitle(index: number, config: QuestionConfig) {
-  return `Section ${String.fromCharCode(65 + index)} - ${config.label}`;
-}
-
-function questionText(index: number, config: QuestionConfig, subject: string, sourceText: string) {
-  const anchor = sourceText.trim().split(/\s+/).slice(0, 10).join(" ");
-  const topic = anchor ? ` based on "${anchor}..."` : "";
-
-  if (config.id === "mcq") {
-    return `Choose the correct answer for ${subject}${topic}.`;
-  }
-
-  if (config.id === "case-study") {
-    return `Read the given context and answer the applied ${subject} case question ${index + 1}.`;
-  }
-
-  return `Answer question ${index + 1} in ${subject}${topic}.`;
-}
-
-function buildMockPaper(values: AssignmentFormValues, assignmentId: string): QuestionPaper {
-  const sections: QuestionSection[] = values.questionConfigs
-    .filter((config) => config.count > 0)
-    .map((config, sectionIndex) => ({
-      id: `${assignmentId}-section-${config.id}`,
-      title: sectionTitle(sectionIndex, config),
-      instruction:
-        config.id === "long" || config.id === "case-study"
-          ? "Attempt any one unless instructed otherwise by your teacher."
-          : "Attempt all questions.",
-      questions: Array.from({ length: config.count }, (_, questionIndex) => ({
-        id: `${assignmentId}-${config.id}-${questionIndex}`,
-        text: questionText(questionIndex, config, values.subject, values.sourceText),
-        type: config.label,
-        difficulty: difficultyCycle[(sectionIndex + questionIndex) % difficultyCycle.length],
-        marks: config.marks,
-      })),
-    }));
-
-  const totalMarks = sections.reduce(
-    (sum, section) =>
-      sum + section.questions.reduce((sectionSum, question) => sectionSum + question.marks, 0),
-    0
-  );
-
-  return {
-    id: `paper-${assignmentId}`,
-    assignmentId,
-    title: values.title,
-    subject: values.subject,
-    className: values.className,
-    dueDate: values.dueDate,
-    durationMinutes: Math.max(30, Math.ceil(totalMarks * 2.5)),
-    totalMarks,
-    sections,
-    createdAt: new Date().toISOString(),
-  };
-}
-
 export function useAssignmentForm() {
-  const router = useRouter();
   const draft = useAssignmentStore((state) => state.draft);
   const updateDraft = useAssignmentStore((state) => state.updateDraft);
-  const resetDraft = useAssignmentStore((state) => state.resetDraft);
   const createAssignment = useAssignmentStore((state) => state.createAssignment);
   const updateStatus = useAssignmentStore((state) => state.updateStatus);
-  const savePaper = useAssignmentStore((state) => state.savePaper);
+  const setAssignmentJobId = useAssignmentStore((state) => state.setAssignmentJobId);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -122,34 +59,34 @@ export function useAssignmentForm() {
     return false;
   }
 
-  function submit() {
+  async function submit() {
     const valuesForSubmit: AssignmentFormValues = {
-      ...draft,
-      title: draft.title.trim() || "Create Assignment",
-      subject: draft.subject.trim() || "General",
-      className: draft.className.trim() || "General",
+      title: (draft.title ?? '').trim() || 'Create Assignment',
+      subject: (draft.subject ?? '').trim() || 'General',
+      gradeLevel: (draft.gradeLevel ?? '').trim() || 'General',
+      dueDate: draft.dueDate,
+      instructions: draft.instructions,
+      questionConfigs: draft.questionConfigs,
     };
 
     if (!validate(valuesForSubmit)) return;
 
     setIsGenerating(true);
-    const assignment = createAssignment(valuesForSubmit);
 
-    window.setTimeout(() => {
-      updateStatus(assignment.id, "generating", 42, "Structuring prompt and section blueprint");
-    }, 500);
+    try {
+      const payload = convertFormToPayload(valuesForSubmit);
+      const { jobId } = await assignmentApi.create(payload);
 
-    window.setTimeout(() => {
-      updateStatus(assignment.id, "generating", 78, "Generating questions and validating schema");
-    }, 1100);
-
-    window.setTimeout(() => {
-      const paper = buildMockPaper(valuesForSubmit, assignment.id);
-      savePaper(paper);
-      updateStatus(assignment.id, "completed", 100, "Question paper ready", paper.id);
-      resetDraft();
-      router.push(routes.output(paper.id));
-    }, 1700);
+      const localAssignment = createAssignment(valuesForSubmit);
+      setAssignmentJobId(localAssignment.id, jobId);
+      updateStatus(localAssignment.id, "processing", 0, "Job queued...");
+      joinJobRoom(jobId);
+      setIsGenerating(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create assignment";
+      setErrors({ form: message });
+      setIsGenerating(false);
+    }
   }
 
   return {

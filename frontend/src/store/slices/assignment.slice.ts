@@ -20,6 +20,7 @@ type AssignmentState = {
     message: string,
     paperId?: string
   ) => void;
+  setAssignmentJobId: (assignmentId: string, jobId: string) => void;
   savePaper: (paper: QuestionPaper) => void;
   getAssignment: (id: string) => Assignment | undefined;
   getPaper: (id: string) => QuestionPaper | undefined;
@@ -28,12 +29,10 @@ type AssignmentState = {
 const defaultDraft: AssignmentFormValues = {
   title: "",
   subject: "",
-  className: "",
+  gradeLevel: "",
   dueDate: "",
-  uploadedFileName: undefined,
-  sourceText: "",
-  questionConfigs: QUESTION_TYPE_OPTIONS,
   instructions: "",
+  questionConfigs: QUESTION_TYPE_OPTIONS,
 };
 
 function createId(prefix: string) {
@@ -57,10 +56,13 @@ export const useAssignmentStore = create<AssignmentState>()(
         })),
       resetDraft: () => set({ draft: defaultDraft }),
       createAssignment: (values) => {
+        const totalMarks = values.questionConfigs.reduce((sum, config) => sum + (config.marks * config.count), 0);
         const assignment: Assignment = {
           ...values,
           id: createId("assignment"),
-          status: "queued",
+          _id: createId("assignment"),
+          totalMarks,
+          status: "processing",
           createdAt: new Date().toISOString(),
         };
 
@@ -68,11 +70,11 @@ export const useAssignmentStore = create<AssignmentState>()(
           assignments: [assignment, ...state.assignments],
           progressByAssignment: {
             ...state.progressByAssignment,
-            [assignment.id]: 8,
+            [assignment.id]: 0,
           },
           messageByAssignment: {
             ...state.messageByAssignment,
-            [assignment.id]: "Queued for AI generation",
+            [assignment.id]: "Job queued...",
           },
         }));
 
@@ -97,6 +99,14 @@ export const useAssignmentStore = create<AssignmentState>()(
             ...state.messageByAssignment,
             [assignmentId]: message,
           },
+        })),
+      setAssignmentJobId: (assignmentId, jobId) =>
+        set((state) => ({
+          assignments: state.assignments.map((assignment) =>
+            assignment.id === assignmentId
+              ? { ...assignment, jobId }
+              : assignment
+          ),
         })),
       savePaper: (paper) =>
         set((state) => ({

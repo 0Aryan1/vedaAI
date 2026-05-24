@@ -1,9 +1,9 @@
 export type QuestionType = "mcq" | "short" | "long" | "case-study";
 
-export type GenerationStatus = "idle" | "queued" | "generating" | "completed" | "failed";
+export type GenerationStatus = "draft" | "processing" | "generating" | "completed" | "failed";
 
 export type QuestionConfig = {
-  id: QuestionType;
+  id: QuestionType | string;
   label: string;
   count: number;
   marks: number;
@@ -12,17 +12,24 @@ export type QuestionConfig = {
 export type AssignmentFormValues = {
   title: string;
   subject: string;
-  className: string;
+  gradeLevel: string;
   dueDate: string;
-  uploadedFileName?: string;
-  sourceText: string;
-  questionConfigs: QuestionConfig[];
   instructions: string;
+  questionConfigs: QuestionConfig[];
 };
 
-export type Assignment = AssignmentFormValues & {
+export type Assignment = {
   id: string;
+  _id: string;
+  title: string;
+  subject: string;
+  gradeLevel: string;
+  dueDate: string;
+  instructions: string;
+  questionConfigs: QuestionConfig[];
+  totalMarks: number;
   createdAt: string;
   status: GenerationStatus;
+  jobId?: string;
   paperId?: string;
 };

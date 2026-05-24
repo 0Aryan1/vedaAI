@@ -4,7 +4,7 @@
 
 ✅ BACKEND READY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[✓] PORT=5000 in .env
+[✓] PORT=8000 in .env
 [✓] Express server configured
 [✓] All routes implemented
 [✓] MongoDB connection ready
@@ -24,8 +24,8 @@ API Endpoints:
 
 ✅ FRONTEND READY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[✓] API_URL=http://localhost:5000/api in .env.local
-[✓] WS_URL=http://localhost:5000 in .env.local
+[✓] API_URL=http://localhost:8000/api in .env.local
+[✓] WS_URL=http://localhost:8000 in .env.local
 [✓] HTTP client implemented (lib/api/client.ts)
 [✓] Assignment API (lib/api/assignments.ts)
 [✓] Papers API (lib/api/papers.ts)

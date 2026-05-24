@@ -19,7 +19,7 @@ export const createAssignmentSchema = z.object({
   title: z.string().trim().min(1),
   subject: z.string().trim().min(1),
   gradeLevel: z.string().trim().min(1),
-  dueDate: z.coerce.date(),
+  dueDate: z.string().min(1, "Due date is required"),
   sections: z.array(sectionSchema).min(1),
   additionalInstructions: z.string().trim().optional(),
   extractedText: z.string().optional(),
@@ -30,6 +30,8 @@ export const createAssignment = asyncHandler(async (req: Request, res: Response)
   const { jobId } = await createGeneratePaperJob(assignment._id.toString());
 
   const updatedAssignment = await Assignment.findById(assignment._id);
+
+  console.log('Assignment created:', assignment._id);
 
   return res.status(201).json(
     new ApiResponse(201, "Assignment created", {

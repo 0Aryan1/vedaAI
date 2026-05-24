@@ -24,7 +24,8 @@ export const QUESTION_TYPES = {
   MCQ: "mcq",
   SHORT: "short",
   LONG: "long",
-  TRUE_FALSE: "true_false",
+  TRUE_FALSE: "true-false",
+  CASE_STUDY: "case-study",
 } as const;
 
 export const JOB_STATUS = {
