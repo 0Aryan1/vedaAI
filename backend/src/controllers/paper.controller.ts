@@ -43,7 +43,7 @@ export const getJobStatus = asyncHandler(async (req: Request, res: Response) => 
           ? JOB_STATUS.ACTIVE
           : JOB_STATUS.WAITING;
 
-  // BullMQ progress can be number or object — normalize it
+  // BullMQ progress can be number or object - normalize it
   const rawProgress = job.progress;
   const percentage = typeof rawProgress === "number"
     ? rawProgress
@@ -55,16 +55,20 @@ export const getJobStatus = asyncHandler(async (req: Request, res: Response) => 
     ? (rawProgress as any).message ?? ""
     : "";
 
-  // Get the job's return value which contains paperId
-  const returnValue = await job.returnvalue;
+  const returnValue = job.returnvalue as { paperId?: string } | null | undefined;
 
   return res.status(200).json(
-    new ApiResponse(200, "Job status fetched", {
-      status,
-      percentage,
-      message,
-      paperId: returnValue?.paperId || null,
-      failedReason: job.failedReason,
-    })
+    {
+      success: true,
+      data: {
+        status,
+        progress: {
+          percentage,
+          message,
+        },
+        paperId: status === JOB_STATUS.COMPLETED ? returnValue?.paperId ?? null : null,
+        failedReason: job.failedReason ?? null,
+      },
+    }
   );
 });

@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useAssignmentStore } from "@/store";
 import { paperApi } from "@/lib/api/papers";
+import { routes } from "@/constants/routes";
 
 export function useJobStatus(assignmentId?: string, jobId?: string) {
+  const router = useRouter();
   const hasStarted = useRef(false);
+  const hasNavigated = useRef(false);
 
   const progress = useAssignmentStore((state) =>
     assignmentId ? (state.progressByAssignment[assignmentId] ?? 0) : 0
@@ -41,8 +45,8 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
           useAssignmentStore.getState().updateStatus(
             assignmentId,
             "generating",
-            result.percentage,
-            result.message
+            result.progress.percentage,
+            result.progress.message
           );
         }
 
@@ -60,6 +64,10 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
               "Done!",
               paperId
             );
+            if (!hasNavigated.current) {
+              hasNavigated.current = true;
+              router.push(routes.output(paperId));
+            }
           }
         }
 
@@ -82,7 +90,7 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
       hasStarted.current = false;
       clearInterval(interval);
     };
-  }, [jobId, assignmentId]);
+  }, [jobId, assignmentId, router]);
 
   return {
     progress,

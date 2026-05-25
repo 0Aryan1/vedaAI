@@ -1,14 +1,25 @@
 import Redis from 'ioredis'
+import type { RedisOptions } from 'ioredis'
 
 const redisUrl = process.env.REDIS_URL
 
-export const redis = new Redis(redisUrl!, {
-  tls: redisUrl?.startsWith('rediss://') 
-    ? { rejectUnauthorized: false } 
-    : undefined,
+if (!redisUrl) {
+  throw new Error('REDIS_URL is not defined')
+}
+
+const parsedRedisUrl = new URL(redisUrl)
+
+const redisOptions: RedisOptions = {
+  host: parsedRedisUrl.hostname,
+  port: Number(parsedRedisUrl.port) || 6379,
+  username: parsedRedisUrl.username || undefined,
+  password: parsedRedisUrl.password || undefined,
+  tls: parsedRedisUrl.protocol === 'rediss:' ? {} : undefined,
   maxRetriesPerRequest: null,
   lazyConnect: false,
-})
+}
+
+export const redis = new Redis(redisOptions)
 
 redis.on('connect', () => console.log('✓ Redis connected'))
 redis.on('error', (err) => console.error('Redis error:', err))

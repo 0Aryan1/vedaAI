@@ -11,6 +11,10 @@ import { ApiResponse } from "./utils/ApiResponse";
 const app = express();
 
 let _io: Server | undefined;
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN,
+].filter(Boolean) as string[];
 
 export const setIO = (io: Server): void => {
   _io = io;
@@ -26,9 +30,9 @@ export const getIO = (): Server => {
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );

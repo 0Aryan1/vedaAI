@@ -4,9 +4,11 @@ import type { ApiResponse } from '@/types/api';
 
 interface JobStatus {
   status: 'waiting' | 'active' | 'completed' | 'failed';
-  percentage: number;
-  message: string;
-  paperId?: string | null;
+  progress: {
+    percentage: number;
+    message: string;
+  };
+  paperId: string | null;
   failedReason?: string | null;
 }
 

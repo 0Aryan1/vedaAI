@@ -7,14 +7,16 @@ function parseRedisUrl(url: string): ConnectionOptions {
     port: Number(parsed.port) || 6379,
     password: parsed.password || undefined,
     username: parsed.username || undefined,
-    tls: url.startsWith('rediss://') 
-      ? { rejectUnauthorized: false } 
-      : undefined,
+    tls: parsed.protocol === 'rediss:' ? {} : undefined,
   }
 }
 
-export const redisConnection: ConnectionOptions = 
-  parseRedisUrl(process.env.REDIS_URL!)
+if (!process.env.REDIS_URL) {
+  throw new Error('REDIS_URL is not defined')
+}
+
+export const redisConnection: ConnectionOptions =
+  parseRedisUrl(process.env.REDIS_URL)
 
 export const defaultJobOptions = {
   removeOnComplete: { count: 100 },

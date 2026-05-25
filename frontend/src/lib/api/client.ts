@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
-  timeout: 30000,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },

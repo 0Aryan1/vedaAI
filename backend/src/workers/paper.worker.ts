@@ -9,19 +9,32 @@ import type { PaperGenerationJobData } from "../types/job.types";
 import { buildPrompt } from "../utils/promptBuilder";
 import { parseAndValidatePaper } from "../utils/responseParser";
 
+const emitToJob = (
+  jobId: string | undefined,
+  event: string,
+  payload: Record<string, unknown>
+) => {
+  if (!jobId) return;
+
+  try {
+    getIO().to(jobId).emit(event, payload);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Socket emit failed";
+    console.warn(`Skipped socket emit for ${event}: ${message}`);
+  }
+};
+
 const emitProgress = async (
   job: Job<PaperGenerationJobData>,
   percentage: number,
   message: string
 ) => {
   await job.updateProgress({ percentage, message });
-  getIO()
-    .to(job.id || "")
-    .emit(SOCKET_EVENTS.JOB_PROGRESS, {
-      jobId: job.id,
-      percentage,
-      message,
-    });
+  emitToJob(job.id, SOCKET_EVENTS.JOB_PROGRESS, {
+    jobId: job.id,
+    percentage,
+    message,
+  });
 };
 
 const openai = new OpenAI({
@@ -37,12 +50,10 @@ export const paperWorker = new Worker<PaperGenerationJobData>(
     try {
       await Assignment.findByIdAndUpdate(assignmentId, { status: "processing" });
 
-      getIO()
-        .to(job.id || "")
-        .emit(SOCKET_EVENTS.JOB_STARTED, {
-          jobId: job.id,
-          assignmentId,
-        });
+      emitToJob(job.id, SOCKET_EVENTS.JOB_STARTED, {
+        jobId: job.id,
+        assignmentId,
+      });
 
       await emitProgress(job, 10, "Starting generation...");
 
@@ -89,13 +100,11 @@ export const paperWorker = new Worker<PaperGenerationJobData>(
 
       await emitProgress(job, 100, "Done");
 
-      getIO()
-        .to(job.id || "")
-        .emit(SOCKET_EVENTS.JOB_COMPLETED, {
-          jobId: job.id,
-          assignmentId,
-          paperId: savedPaper._id.toString(),
-        });
+      emitToJob(job.id, SOCKET_EVENTS.JOB_COMPLETED, {
+        jobId: job.id,
+        assignmentId,
+        paperId: savedPaper._id.toString(),
+      });
 
       return {
         assignmentId,
@@ -106,14 +115,12 @@ export const paperWorker = new Worker<PaperGenerationJobData>(
 
       const message = error instanceof Error ? error.message : "Paper generation failed";
 
-      getIO()
-        .to(job.id || "")
-        .emit(SOCKET_EVENTS.JOB_FAILED, {
-          jobId: job.id,
-          error: message,
-        });
+      emitToJob(job.id, SOCKET_EVENTS.JOB_FAILED, {
+        jobId: job.id,
+        error: message,
+      });
 
-      throw error;
+      throw new Error(message);
     }
   },
   {
