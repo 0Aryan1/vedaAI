@@ -9,7 +9,9 @@ function getSocket(): Socket {
     throw new Error('Socket only available in browser')
   }
   if (!socket) {
-    socket = io(process.env.NEXT_PUBLIC_WS_URL!, {
+    const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'https://vedaai-backend.onrender.com'
+
+    socket = io(socketUrl, {
       autoConnect: false,
       transports: ['polling', 'websocket'],
       withCredentials: true,

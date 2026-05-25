@@ -7,16 +7,27 @@ import connectDB from "./config/db";
 import redis from "./config/redis";
 
 const port = Number(process.env.PORT || 8000);
-const allowedOrigins = [
+const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
   process.env.CORS_ORIGIN,
-].filter(Boolean) as string[];
+]
+  .filter(Boolean)
+  .map((origin) => origin!.replace(/\/$/, "")));
+
+const corsOrigin = (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  if (!origin || allowedOrigins.has(origin.replace(/\/$/, ""))) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`Socket CORS blocked origin: ${origin}`));
+};
 
 const httpServer = http.createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins,
+    origin: corsOrigin,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

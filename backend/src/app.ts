@@ -11,10 +11,21 @@ import { ApiResponse } from "./utils/ApiResponse";
 const app = express();
 
 let _io: Server | undefined;
-const allowedOrigins = [
+const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
   process.env.CORS_ORIGIN,
-].filter(Boolean) as string[];
+]
+  .filter(Boolean)
+  .map((origin) => origin!.replace(/\/$/, "")));
+
+const corsOrigin = (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  if (!origin || allowedOrigins.has(origin.replace(/\/$/, ""))) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`CORS blocked origin: ${origin}`));
+};
 
 export const setIO = (io: Server): void => {
   _io = io;
@@ -30,7 +41,7 @@ export const getIO = (): Server => {
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: corsOrigin,
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     allowedHeaders: ['Content-Type', 'Authorization'],

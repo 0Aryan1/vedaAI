@@ -6,12 +6,20 @@ type NavigationState = {
   getCurrentSection: () => string;
 };
 
+function normalizeHash(hash: string): string {
+  const cleanHash = hash
+    .split("#")
+    .filter(Boolean)
+    .at(-1);
+
+  return cleanHash ? `#${cleanHash}` : "#home";
+}
+
 export const useNavigationStore = create<NavigationState>((set, get) => ({
   currentHash: "",
   
   setHash: (hash: string) => {
-    // Always normalize hash to include '#' prefix
-    const normalizedHash = hash.startsWith('#') ? hash : '#' + hash;
+    const normalizedHash = normalizeHash(hash);
     
     // Only set if different from current hash to prevent duplicate sets
     const currentHash = get().currentHash;
@@ -27,9 +35,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   },
 
   getCurrentSection: () => {
-    const hash = get().currentHash;
-    // Extract section from hash (e.g., "#home" -> "home")
-    return hash.replace("#", "") || "home";
+    return normalizeHash(get().currentHash).replace("#", "") || "home";
   },
 }));
 
@@ -37,13 +43,16 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 if (typeof window !== "undefined") {
   // Use microtask to defer initialization after hydration
   Promise.resolve().then(() => {
-    useNavigationStore.setState({ currentHash: window.location.hash || '#home' });
+    const normalizedHash = normalizeHash(window.location.hash);
+    useNavigationStore.setState({ currentHash: normalizedHash });
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${normalizedHash}`);
   });
 
   // Listen to hash changes in the browser
   const handleHashChange = () => {
-    const newHash = window.location.hash || '#home';
-    useNavigationStore.setState({ currentHash: newHash });
+    const normalizedHash = normalizeHash(window.location.hash);
+    useNavigationStore.setState({ currentHash: normalizedHash });
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${normalizedHash}`);
   };
   window.addEventListener("hashchange", handleHashChange);
 }

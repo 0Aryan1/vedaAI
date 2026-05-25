@@ -1,7 +1,9 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://vedaai-backend.onrender.com/api';
+
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: apiBaseUrl,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
