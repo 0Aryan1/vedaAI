@@ -137,7 +137,7 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
               id="assignment-title"
               type="text"
               placeholder="e.g Final Exam - Chemistry"
-              value={values.title}
+              value={values.title ?? ''}
               onChange={(event) => updateDraft({ title: event.target.value })}
               className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
             />
@@ -152,7 +152,7 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
               id="assignment-subject"
               type="text"
               placeholder="e.g Chemistry, Biology, etc."
-              value={values.subject}
+              value={values.subject ?? ''}
               onChange={(event) => updateDraft({ subject: event.target.value })}
               className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
             />
@@ -167,7 +167,7 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
               id="assignment-grade"
               type="text"
               placeholder="e.g 10th, 12th, University"
-              value={values.gradeLevel}
+              value={values.gradeLevel ?? ''}
               onChange={(event) => updateDraft({ gradeLevel: event.target.value })}
               className="h-11 w-full rounded-full border border-[#d9d9d9] bg-white px-4 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
             />
@@ -182,7 +182,7 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
               <input
                 id="assignment-due-date"
                 type="date"
-                value={values.dueDate}
+                value={values.dueDate ?? ''}
                 onChange={(event) => updateDraft({ dueDate: event.target.value })}
                 className="h-11 w-full rounded-full border border-[#d9d9d9] bg-transparent px-4 pr-12 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#b3b3b3] focus:border-[#b8b8b8]"
               />
@@ -245,7 +245,7 @@ export function AssignmentForm({ renderActions }: AssignmentFormProps) {
             <textarea
               id="assessment-requirements"
               placeholder="Describe your assessment — e.g This is a 3-hour final exam for Grade 10 students covering chapters 1-5 of the textbook. Include topics like photosynthesis, cell division, and genetics."
-              value={values.instructions}
+              value={values.instructions ?? ''}
               onChange={(event) => updateDraft({ instructions: event.target.value })}
               className="min-h-[102px] w-full resize-none rounded-[16px] border border-dashed border-[#dedede] bg-[#f6f6f6] px-4 py-4 pr-14 text-sm font-medium text-[#2d2d2d] outline-none placeholder:text-[#777] focus:border-[#c4c4c4]"
             />

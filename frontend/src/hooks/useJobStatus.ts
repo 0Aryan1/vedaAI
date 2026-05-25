@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAssignmentStore } from "@/store";
 import { paperApi } from "@/lib/api/papers";
 
 export function useJobStatus(assignmentId?: string, jobId?: string) {
-  const updateStatus = useAssignmentStore((state) => state.updateStatus);
+  const hasStarted = useRef(false);
+
   const progress = useAssignmentStore((state) =>
     assignmentId ? (state.progressByAssignment[assignmentId] ?? 0) : 0
   );
   const message = useAssignmentStore((state) =>
-    assignmentId ? (state.messageByAssignment[assignmentId] ?? "No active job") : "No active job"
+    assignmentId ? (state.messageByAssignment[assignmentId] ?? "") : ""
   );
   const assignment = useAssignmentStore((state) =>
     assignmentId ? state.assignments.find((item) => item.id === assignmentId) : undefined
@@ -20,28 +21,79 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
   useEffect(() => {
     if (!jobId || !assignmentId) return;
 
-    const status = assignment?.status;
-    if (status !== "processing" && status !== "generating") return;
+    // Guard against Strict Mode double-mount
+    if (hasStarted.current) return;
+    hasStarted.current = true;
+
+    const currentStatus = useAssignmentStore
+      .getState()
+      .assignments.find((a) => a.id === assignmentId)?.status;
+
+    if (currentStatus === "completed" || currentStatus === "failed") {
+      hasStarted.current = false;
+      return;
+    }
+
+    console.log("[Poll] Starting poll for jobId:", jobId);
 
     const interval = setInterval(async () => {
       try {
+        console.log("[Poll] Polling job status:", jobId);
         const result = await paperApi.getJobStatus(jobId);
-        if (result.status === "completed") {
-          updateStatus(assignmentId, "completed", 100, "Question paper ready");
-          clearInterval(interval);
-        } else if (result.status === "failed") {
-          updateStatus(assignmentId, "failed", 0, result.failedReason || "Generation failed");
-          clearInterval(interval);
-        } else {
-          updateStatus(assignmentId, "generating", result.progress ?? 0, "Generating...");
-        }
-      } catch (error) {
-        console.error("Error polling job status:", error);
-      }
-    }, 4000);
+        console.log("[Poll] Full result:", JSON.stringify(result));
 
-    return () => clearInterval(interval);
-  }, [jobId, assignmentId, assignment?.status, updateStatus]);
+        // Update progress during polling to keep UI current
+        if (result.status === "active") {
+          console.log("[Poll] Updating progress:", { percentage: result.percentage, message: result.message });
+          useAssignmentStore.getState().updateStatus(
+            assignmentId,
+            "generating",
+            result.percentage,
+            result.message
+          );
+        }
+
+        if (result.status === "completed") {
+          console.log("[Poll] Job completed, stopping poll");
+          clearInterval(interval);
+          hasStarted.current = false;
+
+          const paperId = result.paperId;
+          console.log("[Poll] paperId:", paperId);
+
+          if (paperId && assignmentId) {
+            useAssignmentStore.getState().updateStatus(
+              assignmentId,
+              "completed",
+              100,
+              "Done!",
+              paperId
+            );
+          }
+        }
+
+        if (result.status === "failed") {
+          console.log("[Poll] Job failed, stopping poll");
+          clearInterval(interval);
+          hasStarted.current = false;
+          useAssignmentStore.getState().updateStatus(
+            assignmentId,
+            "failed",
+            0,
+            result.failedReason || "Generation failed"
+          );
+        }
+      } catch (err) {
+        console.error("[Poll] Error:", err);
+      }
+    }, 3000);
+
+    return () => {
+      console.log("[Poll] Cleaning up interval");
+      hasStarted.current = false;
+      clearInterval(interval);
+    };
+  }, [jobId, assignmentId]);
 
   return {
     progress,

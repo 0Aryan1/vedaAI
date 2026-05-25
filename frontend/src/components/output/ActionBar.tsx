@@ -1,30 +1,39 @@
 "use client";
 
-import Link from "next/link";
-import { routes } from "@/constants/routes";
-import { Button } from "@/components/ui/Button";
+import type { QuestionPaper } from "@/types/question-paper";
 
-export function ActionBar() {
-  function downloadPdf() {
-    window.print();
-  }
+interface ActionBarProps {
+  paper: QuestionPaper;
+}
 
+export function ActionBar({ paper }: ActionBarProps) {
   return (
-    <div className="sticky top-0 z-10 -mx-4 mb-6 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur print:hidden">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-slate-950">Question paper preview</p>
-          <p className="text-xs text-slate-500">Validated structured output</p>
-        </div>
-        <div className="flex gap-2">
-          <Link href={routes.createAssignment}>
-            <Button variant="secondary">Regenerate</Button>
-          </Link>
-          <Button type="button" onClick={downloadPdf}>
-            Download PDF
-          </Button>
-        </div>
+    <div className="flex items-center justify-between rounded-2xl bg-[#1e1e1e] px-6 py-4 text-white">
+      <div>
+        <p className="text-sm font-semibold">
+          Question paper generated successfully
+        </p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          {paper.subject} · Class {paper.className} · {paper.totalMarks} marks ·{' '}
+          {paper.durationMinutes ? `${paper.durationMinutes} minutes` : "3 hours"}
+        </p>
       </div>
+
+      <button
+        onClick={() => window.print()}
+        className="flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-100"
+      >
+        <svg className="size-4" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M12 3v12M7 11l5 5 5-5M5 19h14"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Download as PDF
+      </button>
     </div>
   );
 }

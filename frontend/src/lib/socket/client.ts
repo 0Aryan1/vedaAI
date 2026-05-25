@@ -4,52 +4,54 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-function getSocket(): Socket | null {
+function getSocket(): Socket {
   // Prevent socket initialization during SSR
   if (typeof window === 'undefined') {
-    return null;
+    throw new Error('Socket only available in browser');
   }
 
   // Create singleton socket instance
   if (!socket) {
-    socket = io(
-      process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000',
-      {
-        autoConnect: false,
-        transports: ['websocket', 'polling'],
-      }
-    );
+    const url = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000';
+    console.log('[Socket] Initializing with URL:', url);
+    
+    socket = io(url, {
+      autoConnect: false,
+      transports: ['websocket', 'polling'],
+    });
+
+    // Connection lifecycle logging
+    socket.on('connect', () => {
+      console.log('[Socket] Connected:', socket?.id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('[Socket] Disconnected');
+    });
+
+    socket.on('connect_error', (err: Error) => {
+      console.error('[Socket] Connection error:', err.message);
+    });
   }
 
   return socket;
 }
 
 export function connectSocket(): void {
-  const s = getSocket();
-
-  if (!s) return;
-
-  if (!s.connected) {
-    s.connect();
-  }
+  if (typeof window === 'undefined') return;
+  console.log('[Socket] Connecting to', process.env.NEXT_PUBLIC_WS_URL);
+  getSocket().connect();
 }
 
 export function disconnectSocket(): void {
-  const s = getSocket();
-
-  if (!s) return;
-
-  if (s.connected) {
-    s.disconnect();
-  }
+  // Intentionally do nothing — socket persists for the lifetime of the browser session
+  // The socket should NOT be destroyed on hook cleanup, only event listeners
 }
 
 export function joinJobRoom(jobId: string): void {
-  const s = getSocket();
-
-  if (!s) return;
-
-  s.emit('join:job', jobId);
+  if (typeof window === 'undefined') return;
+  console.log('[Socket] Joining job room:', jobId);
+  getSocket().emit('join:job', jobId);
 }
 
 export function onJobStarted(
@@ -57,12 +59,18 @@ export function onJobStarted(
     jobId: string;
     assignmentId: string;
   }) => void
-): void {
+): () => void {
   const s = getSocket();
-
-  if (!s) return;
-
-  s.on('job:started', callback);
+  console.log('[Socket] Registering job:started listener');
+  s.on('job:started', (data) => {
+    console.log('[Socket] Received job:started:', data);
+    callback(data);
+  });
+  // Return cleanup function that removes THIS specific listener
+  return () => {
+    console.log('[Socket] Removing job:started listener');
+    s.off('job:started', callback);
+  };
 }
 
 export function onJobProgress(
@@ -71,12 +79,18 @@ export function onJobProgress(
     percentage: number;
     message: string;
   }) => void
-): void {
+): () => void {
   const s = getSocket();
-
-  if (!s) return;
-
-  s.on('job:progress', callback);
+  console.log('[Socket] Registering job:progress listener');
+  s.on('job:progress', (data) => {
+    console.log('[Socket] Received job:progress:', data);
+    callback(data);
+  });
+  // Return cleanup function that removes THIS specific listener
+  return () => {
+    console.log('[Socket] Removing job:progress listener');
+    s.off('job:progress', callback);
+  };
 }
 
 export function onJobCompleted(
@@ -85,12 +99,18 @@ export function onJobCompleted(
     assignmentId: string;
     paperId: string;
   }) => void
-): void {
+): () => void {
   const s = getSocket();
-
-  if (!s) return;
-
-  s.on('job:completed', callback);
+  console.log('[Socket] Registering job:completed listener');
+  s.on('job:completed', (data) => {
+    console.log('[Socket] Received job:completed:', data);
+    callback(data);
+  });
+  // Return cleanup function that removes THIS specific listener
+  return () => {
+    console.log('[Socket] Removing job:completed listener');
+    s.off('job:completed', callback);
+  };
 }
 
 export function onJobFailed(
@@ -98,21 +118,22 @@ export function onJobFailed(
     jobId: string;
     error: string;
   }) => void
-): void {
+): () => void {
   const s = getSocket();
-
-  if (!s) return;
-
-  s.on('job:failed', callback);
+  console.log('[Socket] Registering job:failed listener');
+  s.on('job:failed', (data) => {
+    console.log('[Socket] Received job:failed:', data);
+    callback(data);
+  });
+  // Return cleanup function that removes THIS specific listener
+  return () => {
+    console.log('[Socket] Removing job:failed listener');
+    s.off('job:failed', callback);
+  };
 }
 
 export function offAllListeners(): void {
-  const s = getSocket();
-
-  if (!s) return;
-
-  s.offAny();
+  // Intentionally do nothing — individual listeners are cleaned up via returned cleanup functions
 }
 
-// Export function reference, NOT execution
 export default getSocket;

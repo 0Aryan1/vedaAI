@@ -1,24 +1,40 @@
-import { formatDate } from "@/lib/utils/format";
 import type { QuestionPaper } from "@/types/question-paper";
 
-export function PaperHeader({ paper }: { paper: QuestionPaper }) {
+interface PaperHeaderProps {
+  paper: QuestionPaper;
+}
+
+export function PaperHeader({ paper }: PaperHeaderProps) {
   return (
-    <header className="text-center">
-      <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-        AI Generated Assessment
+    <div className="text-center mb-6">
+      {/* School / paper title — large bold */}
+      <h1 className="text-2xl font-bold text-gray-900">
+        {paper.title}
+      </h1>
+
+      {/* Subject */}
+      <h2 className="text-lg font-semibold text-gray-800 mt-1">
+        Subject: {paper.subject}
+      </h2>
+
+      {/* Class */}
+      <h3 className="text-lg font-semibold text-gray-800 mt-0.5">
+        Class: {paper.className}
+      </h3>
+
+      {/* Meta row — time left, marks right */}
+      <div className="flex justify-between items-center mt-4 mb-4 text-sm font-bold text-gray-900">
+        <span>Time Allowed: {paper.durationMinutes ? `${paper.durationMinutes} minutes` : "3 hours"}</span>
+        <span>Maximum Marks: {paper.totalMarks}</span>
+      </div>
+
+      {/* Instructions */}
+      <p className="font-bold text-sm text-gray-900 mb-4">
+        All questions are compulsory unless stated otherwise.
       </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{paper.title}</h1>
-      <div className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-        <span>Subject: {paper.subject}</span>
-        <span>Class: {paper.className}</span>
-        <span>Due: {formatDate(paper.dueDate)}</span>
-      </div>
-      <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm font-semibold text-slate-800">
-        <span className="rounded-full bg-slate-100 px-3 py-1">Total Marks: {paper.totalMarks}</span>
-        <span className="rounded-full bg-slate-100 px-3 py-1">
-          Duration: {paper.durationMinutes} min
-        </span>
-      </div>
-    </header>
+
+      {/* Divider */}
+      <hr className="border-gray-300 mb-4" />
+    </div>
   );
 }

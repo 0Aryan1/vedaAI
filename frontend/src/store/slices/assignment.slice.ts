@@ -22,6 +22,7 @@ type AssignmentState = {
   ) => void;
   setAssignmentJobId: (assignmentId: string, jobId: string) => void;
   savePaper: (paper: QuestionPaper) => void;
+  clearCompletedAssignments: () => void;
   getAssignment: (id: string) => Assignment | undefined;
   getPaper: (id: string) => QuestionPaper | undefined;
 };
@@ -54,7 +55,17 @@ export const useAssignmentStore = create<AssignmentState>()(
             ...patch,
           },
         })),
-      resetDraft: () => set({ draft: defaultDraft }),
+      resetDraft: () =>
+        set({
+          draft: {
+            title: "",
+            subject: "",
+            gradeLevel: "",
+            dueDate: "",
+            instructions: "",
+            questionConfigs: QUESTION_TYPE_OPTIONS.map((c) => ({ ...c })),
+          },
+        }),
       createAssignment: (values) => {
         const totalMarks = values.questionConfigs.reduce((sum, config) => sum + (config.marks * config.count), 0);
         const assignment: Assignment = {
@@ -115,6 +126,12 @@ export const useAssignmentStore = create<AssignmentState>()(
             assignment.id === paper.assignmentId
               ? { ...assignment, paperId: paper.id, status: "completed" }
               : assignment
+          ),
+        })),
+      clearCompletedAssignments: () =>
+        set((state) => ({
+          assignments: state.assignments.filter(
+            (a) => a.status !== "completed" && a.status !== "failed"
           ),
         })),
       getAssignment: (id) => get().assignments.find((assignment) => assignment.id === id),

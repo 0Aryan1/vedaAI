@@ -1,14 +1,24 @@
-const fields = ["Name", "Roll Number", "Section"];
+interface StudentInfoSectionProps {
+  gradeLevel: string;
+}
 
-export function StudentInfoSection() {
+export function StudentInfoSection({ gradeLevel }: StudentInfoSectionProps) {
   return (
-    <div className="grid gap-4 border-y border-slate-200 py-5 sm:grid-cols-3">
-      {fields.map((field) => (
-        <div key={field} className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{field}</span>
-          <span className="h-8 border-b border-slate-300" />
-        </div>
-      ))}
+    <div className="mb-8 space-y-2 text-sm text-gray-900">
+      <div className="flex items-baseline gap-1">
+        <span className="font-normal">Name:</span>
+        <span className="inline-block border-b border-gray-900 w-48 ml-1" />
+      </div>
+      <div className="flex items-baseline gap-1">
+        <span className="font-normal">Roll Number:</span>
+        <span className="inline-block border-b border-gray-900 w-36 ml-1" />
+      </div>
+      <div className="flex items-baseline gap-1">
+        <span className="font-normal">
+          Class: {gradeLevel} Section:
+        </span>
+        <span className="inline-block border-b border-gray-900 w-24 ml-1" />
+      </div>
     </div>
   );
 }

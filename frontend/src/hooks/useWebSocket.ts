@@ -1,112 +1,89 @@
 "use client";
 
-import { useEffect } from "react";
-import { 
-  connectSocket, 
-  disconnectSocket, 
-  onJobStarted, 
-  onJobProgress, 
-  onJobCompleted, 
+import { useEffect, useRef } from "react";
+import {
+  connectSocket,
+  onJobStarted,
+  onJobProgress,
+  onJobCompleted,
   onJobFailed,
-  offAllListeners 
 } from "@/lib/socket/client";
 import { useAssignmentStore } from "@/store";
 import type { JobStatusPayload } from "@/types/websocket";
 
 export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
+  const onStatusRef = useRef(onStatus);
+
+  // Separate effect to update ref without re-registering listeners
+  useEffect(() => {
+    onStatusRef.current = onStatus;
+  }, [onStatus]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    console.log("[WS] Hook mounted, connecting socket");
     connectSocket();
+
     const store = useAssignmentStore.getState();
 
-    // Helper to find assignmentId by jobId
-    const getAssignmentIdByJobId = (jobId: string): string | undefined => {
-      return store.assignments.find((a) => a.jobId === jobId)?.id;
-    };
+    const offStarted = onJobStarted(({ jobId, assignmentId: backendAssignmentId }) => {
+      console.log("[WS] Job started for assignment:", backendAssignmentId);
+      const state = useAssignmentStore.getState();
+      const assignment = state.assignments.find((a) => a.jobId === jobId);
+      const assignmentId = backendAssignmentId || assignment?.id;
 
-    // Listen to job:started
-    onJobStarted(({ jobId, assignmentId: backendAssignmentId }) => {
-      const assignmentId = backendAssignmentId || getAssignmentIdByJobId(jobId);
       if (assignmentId) {
         store.updateStatus(assignmentId, "processing", 0, "Starting generation...");
-        onStatus?.({
-          jobId,
-          assignmentId,
-          status: "processing",
-          progress: 0,
-          message: "Started",
-        });
+        onStatusRef.current?.({ jobId, assignmentId, message: "Started" });
       }
     });
 
-    // Listen to job:progress
-    onJobProgress(({ jobId, percentage, message }) => {
-      const assignmentId = getAssignmentIdByJobId(jobId);
-      if (assignmentId) {
-        store.updateStatus(assignmentId, "generating", percentage, message);
-        onStatus?.({
-          jobId,
-          percentage,
-          message,
-          status: "generating",
-        });
-      } else {
-        // Fallback: update any assignment that's currently processing
-        const assignments = store.assignments;
-        for (const assignment of assignments) {
-          if (assignment.status === "processing" || assignment.status === "generating") {
-            store.updateStatus(assignment.id, "generating", percentage, message);
-          }
-        }
+    const offProgress = onJobProgress(({ jobId, percentage, message }) => {
+      console.log(`[WS] Progress ${percentage}%: ${message}`);
+      const state = useAssignmentStore.getState();
+      const assignment = state.assignments.find((a) => a.jobId === jobId);
+
+      if (assignment) {
+        store.updateStatus(assignment.id, "generating", percentage, message);
+        onStatusRef.current?.({ jobId, percentage, message });
       }
     });
 
-    // Listen to job:completed
-    onJobCompleted(({ jobId, assignmentId: backendAssignmentId, paperId }) => {
-      const assignmentId = backendAssignmentId || getAssignmentIdByJobId(jobId);
+    const offCompleted = onJobCompleted(({ jobId, assignmentId: backendAssignmentId, paperId }) => {
+      console.log("[WS] Job completed! paperId:", paperId);
+      const state = useAssignmentStore.getState();
+      const assignment = state.assignments.find((a) => a.jobId === jobId);
+      const assignmentId = backendAssignmentId || assignment?.id;
+
       if (assignmentId) {
-        store.updateStatus(assignmentId, "completed", 100, "Question paper ready", paperId);
-        onStatus?.({
-          jobId,
-          assignmentId,
-          paperId,
-          status: "completed",
-          progress: 100,
-          message: "Completed",
-        });
+        store.updateStatus(assignmentId, "completed", 100, "Done!", paperId);
+        onStatusRef.current?.({ jobId, assignmentId, paperId });
       }
     });
 
-    // Listen to job:failed
-    onJobFailed(({ jobId, error }) => {
-      const assignmentId = getAssignmentIdByJobId(jobId);
-      if (assignmentId) {
-        store.updateStatus(assignmentId, "failed", 0, error);
-        onStatus?.({
-          jobId,
-          error,
-          status: "failed",
-        });
-      } else {
-        // Fallback: update any assignment that's currently processing
-        const assignments = store.assignments;
-        for (const assignment of assignments) {
-          if (assignment.status === "processing" || assignment.status === "generating") {
-            store.updateStatus(assignment.id, "failed", 0, error);
-          }
-        }
+    const offFailed = onJobFailed(({ jobId, error }) => {
+      console.log("[WS] Job failed:", error);
+      const state = useAssignmentStore.getState();
+      const assignment = state.assignments.find((a) => a.jobId === jobId);
+
+      if (assignment) {
+        store.updateStatus(assignment.id, "failed", 0, error);
+        onStatusRef.current?.({ jobId, error });
       }
     });
 
     return () => {
-      offAllListeners();
-      disconnectSocket();
+      console.log("[WS] Hook unmounting, removing own listeners only");
+      offStarted();
+      offProgress();
+      offCompleted();
+      offFailed();
+      // DO NOT call disconnectSocket() — socket persists for session lifetime
     };
-  }, [onStatus]);
+  }, []); // empty deps — listeners registered once for lifetime of component
 
   return {
     isConnected: true,
-    emitLocalStatus: onStatus,
   };
 }

@@ -19,7 +19,53 @@ body {
 }
 
 @media print {
+  /* Hide everything except the paper */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Hide nav, sidebar */
+  nav, aside, header {
+    display: none !important;
+  }
+
+  /* Reset body */
   body {
-    background: white;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Paper takes full page */
+  #paper-print-area {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Prevent questions splitting across pages */
+  li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Use serif font for print */
+  #paper-print-area {
+    font-family: Georgia, "Times New Roman", serif !important;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  /* Ensure colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
+

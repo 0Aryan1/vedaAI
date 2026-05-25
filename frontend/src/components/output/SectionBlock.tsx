@@ -1,27 +1,50 @@
-import { QuestionCard } from "@/components/output/QuestionCard";
+import { QuestionCard } from "./QuestionCard";
 import type { QuestionSection } from "@/types/question-paper";
 
-type SectionBlockProps = {
+interface SectionBlockProps {
   section: QuestionSection;
-};
+  startNumber: number;
+}
 
-export function SectionBlock({ section }: SectionBlockProps) {
-  const sectionMarks = section.questions.reduce((sum, question) => sum + question.marks, 0);
+function getQuestionTypeLabel(type?: string): string {
+  if (!type) return "Questions";
+  const labels: Record<string, string> = {
+    mcq: "Multiple Choice Questions",
+    short: "Short Answer Questions",
+    long: "Long Answer Questions",
+    "true-false": "True or False Questions",
+    "case-study": "Case Study Questions",
+  };
+  return labels[type] || "Questions";
+}
 
+export function SectionBlock({ section, startNumber }: SectionBlockProps) {
   return (
-    <section className="grid gap-4">
-      <div className="flex flex-col gap-2 border-b border-slate-200 pb-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-950">{section.title}</h2>
-          <p className="mt-1 text-sm text-slate-500">{section.instruction}</p>
-        </div>
-        <p className="text-sm font-semibold text-slate-700">{sectionMarks} marks</p>
-      </div>
-      <ol className="grid gap-3">
-        {section.questions.map((question, index) => (
-          <QuestionCard key={question.id} question={question} index={index} />
+    <div className="mb-8">
+      {/* Section title — centered, not bold, larger */}
+      <h2 className="text-center text-xl font-semibold text-gray-900 mb-3">
+        {section.title}
+      </h2>
+
+      {/* Question type label — bold */}
+      <p className="font-bold text-sm text-gray-900 mb-1">
+        {getQuestionTypeLabel(section.questions[0]?.type)}
+      </p>
+
+      {/* Instruction — italic */}
+      <p className="italic text-sm text-gray-600 mb-4">
+        {section.instruction}
+      </p>
+
+      {/* Questions as ordered list */}
+      <ol
+        className="list-decimal list-outside ml-6 space-y-3"
+        start={startNumber}
+      >
+        {section.questions.map((question) => (
+          <QuestionCard key={question.id} question={question} />
         ))}
       </ol>
-    </section>
+    </div>
   );
 }
