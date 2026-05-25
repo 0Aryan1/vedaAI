@@ -13,9 +13,11 @@ const httpServer = http.createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: frontendUrl,
+    origin: process.env.FRONTEND_URL,
+    methods: ['GET', 'POST'],
     credentials: true,
   },
+  transports: ['websocket', 'polling'],
 });
 
 setIO(io);

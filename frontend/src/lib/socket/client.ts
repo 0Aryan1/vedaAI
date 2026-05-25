@@ -1,29 +1,24 @@
 'use client';
 
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client'
 
-let socket: Socket | null = null;
+let socket: Socket | null = null
 
 function getSocket(): Socket {
-  // Prevent socket initialization during SSR
   if (typeof window === 'undefined') {
-    throw new Error('Socket only available in browser');
+    throw new Error('Socket only available in browser')
   }
-
-  // Create singleton socket instance
   if (!socket) {
-    const url = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000';
-    socket = io(url, {
+    socket = io(process.env.NEXT_PUBLIC_WS_URL!, {
       autoConnect: false,
       transports: ['websocket', 'polling'],
-    });
-
-    socket.on('connect_error', () => {
-      // Socket connection error - will retry automatically
-    });
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    })
   }
-
-  return socket;
+  return socket
 }
 
 export function connectSocket(): void {
