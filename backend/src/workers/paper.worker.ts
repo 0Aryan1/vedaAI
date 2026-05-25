@@ -131,3 +131,17 @@ export const paperWorker = new Worker<PaperGenerationJobData>(
 paperWorker.on("failed", (job, error) => {
   console.error(`Paper generation job ${job?.id} failed`, error);
 });
+
+paperWorker.on("error", (error) => {
+  console.error("Worker error:", error);
+});
+
+process.on("SIGTERM", async () => {
+  await paperWorker.close();
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  await paperWorker.close();
+  process.exit(0);
+});

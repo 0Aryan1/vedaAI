@@ -9,16 +9,17 @@ function getSocket(): Socket {
     throw new Error('Socket only available in browser')
   }
   if (!socket) {
+    const isProduction = process.env.NODE_ENV === 'production'
     const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'https://vedaai-backend.onrender.com'
 
     socket = io(socketUrl, {
       autoConnect: false,
-      transports: ['polling', 'websocket'],
+      transports: isProduction ? ['polling'] : ['websocket', 'polling'],
       withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000,
-      timeout: 20000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 3000,
+      timeout: 30000,
     })
   }
   return socket

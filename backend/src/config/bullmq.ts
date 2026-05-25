@@ -5,9 +5,12 @@ function parseRedisUrl(url: string): ConnectionOptions {
   return {
     host: parsed.hostname,
     port: Number(parsed.port) || 6379,
-    password: parsed.password || undefined,
-    username: parsed.username || undefined,
-    tls: parsed.protocol === 'rediss:' ? {} : undefined,
+    password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+    username: parsed.username || 'default',
+    tls: parsed.protocol === 'rediss:' 
+      ? { rejectUnauthorized: false } 
+      : undefined,
+    maxRetriesPerRequest: null,
   }
 }
 

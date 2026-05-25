@@ -13,10 +13,11 @@ const redisOptions: RedisOptions = {
   host: parsedRedisUrl.hostname,
   port: Number(parsedRedisUrl.port) || 6379,
   username: parsedRedisUrl.username || undefined,
-  password: parsedRedisUrl.password || undefined,
-  tls: parsedRedisUrl.protocol === 'rediss:' ? {} : undefined,
+  password: parsedRedisUrl.password ? decodeURIComponent(parsedRedisUrl.password) : undefined,
+  tls: parsedRedisUrl.protocol === 'rediss:' ? { rejectUnauthorized: false } : undefined,
   maxRetriesPerRequest: null,
   lazyConnect: false,
+  retryStrategy: (times) => Math.min(times * 500, 2000),
 }
 
 export const redis = new Redis(redisOptions)

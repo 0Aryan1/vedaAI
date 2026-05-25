@@ -110,13 +110,21 @@ export default function AssignmentsPage() {
   const router = useRouter();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
     assignmentApi
       .getAll()
-      .then(setAssignments)
+      .then((data) => {
+        setAssignments(Array.isArray(data) ? data : []);
+        setError(null);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setAssignments([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -187,6 +195,20 @@ export default function AssignmentsPage() {
           />
         </div>
       </div>
+
+      {/* Error state */}
+      {error && (
+        <div className="mb-6 p-4 rounded-2xl border border-red-200 bg-red-50">
+          <p className="text-sm font-semibold text-red-800">Failed to load assignments</p>
+          <p className="text-xs text-red-700 mt-1">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-3 px-4 py-1.5 bg-red-600 text-white text-xs font-medium rounded-full hover:bg-red-700 transition"
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* Loading */}
       {loading && (

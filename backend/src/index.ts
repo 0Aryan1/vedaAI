@@ -57,7 +57,7 @@ const startServer = async (): Promise<void> => {
   try {
     await connectDB();
 
-    httpServer.listen(port, () => {
+    httpServer.listen(port, '0.0.0.0', () => {
       console.log(`VedaAI API listening on port ${port}`);
     });
   } catch (error) {

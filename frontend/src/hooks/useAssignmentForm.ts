@@ -98,6 +98,7 @@ export function useAssignmentForm() {
       setIsGenerating(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to create assignment";
+      resetDraft();
       setErrors({ form: message });
       setIsGenerating(false);
     }
