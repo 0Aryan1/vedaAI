@@ -9,13 +9,16 @@ function getSocket(): Socket {
     throw new Error('Socket only available in browser')
   }
   if (!socket) {
+    const isProduction = process.env.NODE_ENV === 'production'
+
     socket = io(process.env.NEXT_PUBLIC_WS_URL!, {
       autoConnect: false,
-      transports: ['websocket', 'polling'],
+      transports: isProduction ? ['polling'] : ['websocket', 'polling'],
       withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      timeout: 20000,
     })
   }
   return socket
