@@ -12,11 +12,6 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    console.error('API Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
     const message =
       error.response?.data && typeof error.response.data === 'object' && 'message' in error.response.data
         ? (error.response.data as { message: string }).message

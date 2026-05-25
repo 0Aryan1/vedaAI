@@ -124,7 +124,3 @@ export const paperWorker = new Worker<PaperGenerationJobData>(
 paperWorker.on("failed", (job, error) => {
   console.error(`Paper generation job ${job?.id} failed`, error);
 });
-
-paperWorker.on("completed", (job) => {
-  console.log(`Paper generation job ${job.id} completed`);
-});

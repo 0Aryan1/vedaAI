@@ -47,8 +47,6 @@ const startServer = async (): Promise<void> => {
 };
 
 const shutdown = async (signal: string): Promise<void> => {
-  console.log(`${signal} received. Shutting down...`);
-
   httpServer.close(async () => {
     await redis.quit();
     process.exit(0);

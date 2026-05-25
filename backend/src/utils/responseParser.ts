@@ -92,25 +92,12 @@ export const parseAndValidatePaper = (rawResponse: string): QuestionPaper => {
   try {
     parsed = JSON.parse(stripMarkdownFences(rawResponse));
   } catch (error) {
-    console.log(
-      "[Parser] Failed to parse JSON. Raw response:",
-      rawResponse.substring(0, 500)
-    );
     throw new ApiError(422, "AI response was not valid JSON", error);
   }
-
-  console.log(
-    "[Parser] Parsed JSON structure:",
-    JSON.stringify(parsed, null, 2).substring(0, 1000)
-  );
 
   const result = questionPaperSchema.safeParse(parsed);
 
   if (!result.success) {
-    console.log(
-      "[Parser] Validation failed:",
-      JSON.stringify(result.error.flatten(), null, 2)
-    );
     throw new ApiError(
       422,
       "AI response validation failed",

@@ -37,28 +37,22 @@ export default function OutputPage({
   useEffect(() => {
     const fetchPaper = async () => {
       if (!id) {
-        console.log("[Output] No paper ID provided");
         setError("No paper ID provided");
         setLoading(false);
         return;
       }
 
-      console.log("[Output] id:", id);
-
       // First, try to get from local store
       const storedPaper = useAssignmentStore.getState().getPaper(id);
       if (storedPaper) {
-        console.log("[Output] Paper found in store:", storedPaper.title);
         setPaper(storedPaper);
         setLoading(false);
         return;
       }
 
       // If not in store, fetch from backend
-      console.log("[Output] Paper not in store, fetching from backend:", id);
       try {
         const fetchedPaper = await paperApi.getById(id);
-        console.log("[Output] Paper fetched from backend:", fetchedPaper.title);
         setPaper(fetchedPaper);
 
         // Also save to store for future access
@@ -66,7 +60,6 @@ export default function OutputPage({
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to fetch paper";
-        console.error("[Output] Fetch error:", errorMessage);
         setError(errorMessage);
       } finally {
         setLoading(false);

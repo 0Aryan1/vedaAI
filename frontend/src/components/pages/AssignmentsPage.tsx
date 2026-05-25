@@ -129,8 +129,8 @@ export default function AssignmentsPage() {
       await assignmentApi.delete(id);
       setAssignments((prev) => prev.filter((a) => a.id !== id));
       setOpenMenuId(null);
-    } catch (error) {
-      console.error("Failed to delete assignment:", error);
+    } catch {
+      // Deletion failed
     }
   }
 

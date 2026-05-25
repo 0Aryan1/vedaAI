@@ -36,9 +36,9 @@ export function BellButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function Avatar() {
+export function Avatar({ compact = false }: { compact?: boolean }) {
   return (
-    <span className="flex size-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffd4c4_0%,#f28b6c_44%,#1f2933_45%,#111827_100%)] text-xs font-bold text-white xl:size-12">
+    <span className={`flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffd4c4_0%,#f28b6c_44%,#1f2933_45%,#111827_100%)] text-xs font-bold text-white ${compact ? "size-10" : "size-11 xl:size-12"}`}>
       JD
     </span>
   );

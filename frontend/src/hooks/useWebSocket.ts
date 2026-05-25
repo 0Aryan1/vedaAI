@@ -22,13 +22,11 @@ export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    console.log("[WS] Hook mounted, connecting socket");
     connectSocket();
 
     const store = useAssignmentStore.getState();
 
     const offStarted = onJobStarted(({ jobId, assignmentId: backendAssignmentId }) => {
-      console.log("[WS] Job started for assignment:", backendAssignmentId);
       const state = useAssignmentStore.getState();
       const assignment = state.assignments.find((a) => a.jobId === jobId);
       const assignmentId = backendAssignmentId || assignment?.id;
@@ -40,7 +38,6 @@ export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
     });
 
     const offProgress = onJobProgress(({ jobId, percentage, message }) => {
-      console.log(`[WS] Progress ${percentage}%: ${message}`);
       const state = useAssignmentStore.getState();
       const assignment = state.assignments.find((a) => a.jobId === jobId);
 
@@ -51,7 +48,6 @@ export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
     });
 
     const offCompleted = onJobCompleted(({ jobId, assignmentId: backendAssignmentId, paperId }) => {
-      console.log("[WS] Job completed! paperId:", paperId);
       const state = useAssignmentStore.getState();
       const assignment = state.assignments.find((a) => a.jobId === jobId);
       const assignmentId = backendAssignmentId || assignment?.id;
@@ -63,7 +59,6 @@ export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
     });
 
     const offFailed = onJobFailed(({ jobId, error }) => {
-      console.log("[WS] Job failed:", error);
       const state = useAssignmentStore.getState();
       const assignment = state.assignments.find((a) => a.jobId === jobId);
 
@@ -74,14 +69,12 @@ export function useWebSocket(onStatus?: (payload: JobStatusPayload) => void) {
     });
 
     return () => {
-      console.log("[WS] Hook unmounting, removing own listeners only");
       offStarted();
       offProgress();
       offCompleted();
       offFailed();
-      // DO NOT call disconnectSocket() — socket persists for session lifetime
     };
-  }, []); // empty deps — listeners registered once for lifetime of component
+  }, []);
 
   return {
     isConnected: true,

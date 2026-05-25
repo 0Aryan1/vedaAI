@@ -22,7 +22,7 @@ export function MobileBottombar() {
   const currentHash = useNavigationStore((state) => state.currentHash);
 
   return (
-    <nav className="fixed inset-x-5 bottom-5 z-20 grid h-24 grid-cols-4 items-center rounded-[30px] bg-[#171818] px-4 text-center shadow-[0_30px_110px_rgba(0,0,0,0.32)] md:hidden">
+    <nav className="fixed inset-x-3 bottom-5 z-20 grid h-[88px] grid-cols-4 items-center rounded-[30px] bg-[#171818] px-3 text-center shadow-[0_30px_110px_rgba(0,0,0,0.32)] md:hidden">
       {items.map((item) => {
         const itemHash = item.href.split("#")[1];
         const isActive = currentHash === `#${itemHash}`;
@@ -32,12 +32,12 @@ export function MobileBottombar() {
             key={item.label}
             href={item.href}
             onClick={() => useNavigationStore.getState().setHash(`#${itemHash}`)}
-            className={`grid justify-items-center gap-1 text-[14px] font-bold ${
+            className={`grid h-full min-w-0 place-content-center justify-items-center gap-1 px-1 text-[12px] font-bold leading-none ${
               isActive ? "text-white" : "text-[#5f5f5f]"
             }`}
           >
             <NavGlyph type={item.icon} />
-            {item.label}
+            <span className="block max-w-full whitespace-nowrap">{item.label}</span>
           </Link>
         );
       })}

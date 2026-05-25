@@ -48,10 +48,8 @@ export default function CreateAssignmentPage() {
   // Connect WebSocket with fresh router reference
   // Navigation happens ONLY here via onStatus callback
   useWebSocket((payload: JobStatusPayload) => {
-    console.log("[Page] WebSocket status update:", payload);
     if (payload.paperId && !hasNavigated.current) {
       hasNavigated.current = true;
-      console.log("[Page] Navigating to output:", payload.paperId);
       routerRef.current.push(routes.output(payload.paperId));
     }
   });
@@ -59,7 +57,6 @@ export default function CreateAssignmentPage() {
   // Join job room when jobId becomes available
   useEffect(() => {
     if (!activeAssignment?.jobId) return;
-    console.log("[Page] Joining job room:", activeAssignment.jobId);
     joinJobRoom(activeAssignment.jobId);
   }, [activeAssignment?.jobId]);
 
@@ -174,7 +171,6 @@ export default function CreateAssignmentPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    console.log('[Button] Submit clicked');
                     submit();
                   }}
                   disabled={formIsGenerating || isGenerating}

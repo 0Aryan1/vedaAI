@@ -28,8 +28,7 @@ export async function extractTextFromFile(file: File): Promise<string> {
       return file.text();
     }
     return "";
-  } catch (error) {
-    console.error("Error extracting text from file:", error);
+  } catch {
     return "";
   }
 }
