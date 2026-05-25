@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { routes } from "@/constants/routes";
 import { formatDate } from "@/lib/utils/format";
-import { useAssignmentStore } from "@/store";
+import { assignmentApi } from "@/lib/api/assignments";
+import type { Assignment } from "@/types/assignment";
 
 function EmptyAssignmentsIllustration() {
   return (
@@ -44,9 +46,7 @@ function EmptyAssignments() {
   );
 }
 
-function AssignmentsList() {
-  const assignments = useAssignmentStore((state) => state.assignments);
-
+function AssignmentsList({ assignments }: { assignments: Assignment[] }) {
   return (
     <section className="mx-auto w-full max-w-5xl pt-6 md:pt-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -81,7 +81,7 @@ function AssignmentsList() {
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-[#999] sm:text-base">
-                  {assignment.subject} • {assignment.className} • Due {formatDate(assignment.dueDate)}
+                  {assignment.subject} • {assignment.gradeLevel} • Due {formatDate(assignment.dueDate)}
                 </p>
               </div>
             </div>
@@ -101,7 +101,55 @@ function AssignmentsList() {
 }
 
 export default function AssignmentsPage() {
-  const assignments = useAssignmentStore((state) => state.assignments);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return assignments.length === 0 ? <EmptyAssignments /> : <AssignmentsList />;
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        console.log("[AssignmentsPage] Fetching all assignments from backend");
+        const data = await assignmentApi.getAll();
+        console.log("[AssignmentsPage] Fetched assignments:", data.length);
+        setAssignments(data);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch assignments";
+        console.error("[AssignmentsPage] Error:", errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignments();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+          <p className="text-sm text-gray-600">Loading assignments...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <div className="mx-auto max-w-md rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+          <h1 className="text-lg font-semibold text-red-900">Error loading assignments</h1>
+          <p className="mt-2 text-sm text-red-700">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return assignments.length === 0 ? (
+    <EmptyAssignments />
+  ) : (
+    <AssignmentsList assignments={assignments} />
+  );
 }
