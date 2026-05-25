@@ -26,11 +26,11 @@ export function DesktopSidebar() {
     <aside className="hidden fixed left-5 top-5 bottom-5 w-[320px] shrink-0 flex-col rounded-[20px] bg-white px-6 py-6 shadow-[0_30px_110px_rgba(0,0,0,0.16)] lg:w-[340px] xl:w-[360px] md:flex">
       <Link 
         href={`${routes.dashboard}#home`} 
-        className="flex items-center gap-3" 
+        className="flex min-h-[72px] items-center gap-0" 
         onClick={() => useNavigationStore.getState().setHash('#home')}
       >
         <LogoMark />
-        <span className="text-[31px] font-bold tracking-[-0.06em] text-[#2b2d2f] leading-none xl:text-[34px]">VedaAI</span>
+        <span className="-ml-4 text-[31px] font-bold leading-[0.95] tracking-[-0.06em] text-[#2b2d2f] xl:text-[34px]">VedaAI</span>
       </Link>
 
       <Link

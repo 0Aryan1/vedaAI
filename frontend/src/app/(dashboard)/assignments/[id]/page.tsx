@@ -38,7 +38,7 @@ export default function AssignmentDetailPage() {
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-slate-950">{assignment.title}</h1>
           <p className="mt-2 text-sm text-slate-500">
-            {assignment.subject} | {assignment.className} | Due {formatDate(assignment.dueDate)}
+            {assignment.subject} | {assignment.gradeLevel} | Due {formatDate(assignment.dueDate)}
           </p>
         </CardHeader>
         <CardBody className="grid gap-4">

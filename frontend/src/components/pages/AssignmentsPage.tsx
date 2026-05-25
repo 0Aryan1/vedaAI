@@ -1,155 +1,230 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { routes } from "@/constants/routes";
-import { formatDate } from "@/lib/utils/format";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { assignmentApi } from "@/lib/api/assignments";
 import type { Assignment } from "@/types/assignment";
+import { routes } from "@/constants/routes";
 
-function EmptyAssignmentsIllustration() {
+function AssignmentCard({
+  assignment,
+  isMenuOpen,
+  onMenuToggle,
+  onView,
+  onDelete,
+}: {
+  assignment: Assignment;
+  isMenuOpen: boolean;
+  onMenuToggle: () => void;
+  onView: () => void;
+  onDelete: () => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        // close handled by parent
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const assignedOn = new Date(assignment.createdAt)
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+
+  const dueDate = assignment.dueDate
+    ? new Date(assignment.dueDate)
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-")
+    : null;
+
   return (
-    <div className="relative mx-auto h-58 w-64 sm:h-72 sm:w-78 md:h-80 md:w-88">
-      <Image
-        src="/icons/Illustration found.svg"
-        alt="No assignments illustration"
-        fill
-        className="object-contain"
-      />
+    <div className="relative rounded-2xl border border-[#e8e8e8] bg-linear-to-br from-[#f0f0f0] to-[#e8e8e8] p-5 flex flex-col justify-between min-h-30 hover:border-[#ccc] transition">
+      {/* Top row: title + menu */}
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-bold text-[#2e3033] leading-snug flex-1 font-sans">
+          {assignment.title}
+        </h3>
+
+        {/* Three dot menu */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={onMenuToggle}
+            className="flex size-8 items-center justify-center rounded-full text-[#999] hover:bg-[#e8e8e8] hover:text-[#2e3033] transition"
+          >
+            <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="5" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="12" cy="19" r="1.5" />
+            </svg>
+          </button>
+
+          {/* Dropdown menu */}
+          {isMenuOpen && (
+            <div className="absolute right-0 top-9 z-50 w-44 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+              <button
+                onClick={onView}
+                className="w-full px-4 py-3 text-left text-sm text-gray-900 hover:bg-gray-50 transition"
+              >
+                View Assignment
+              </button>
+              <button
+                onClick={onDelete}
+                className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom row: assigned on + due date */}
+      <div className="flex items-center justify-between mt-4 text-sm font-sans">
+        <span className="text-[#999]">
+          <span className="font-semibold text-[#2e3033]">Assigned on</span>: {assignedOn}
+        </span>
+
+        {dueDate && (
+          <span className="text-[#999]">
+            <span className="font-semibold text-[#2e3033]">Due</span>: {dueDate}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
 
-function EmptyAssignments() {
-  return (
-    <section className="flex flex-1 items-center justify-center">
-      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-        <EmptyAssignmentsIllustration />
-        <h1 className="mt-5 text-2xl font-bold text-[#2e3033] sm:text-3xl">
-          No assignments yet
-        </h1>
-        <p className="mt-3 max-w-lg text-sm leading-6 text-[#888] sm:text-base">
-          Create your first assignment to start collecting and grading student submissions. You can set up rubrics, define marking criteria, and let AI assist with grading.
-        </p>
-        <Link
-          href={routes.createAssignment}
-          className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#1a1a1a] px-7 text-sm font-semibold text-white transition hover:bg-[#333] sm:h-12 sm:px-8 sm:text-base"
-        >
-          <svg aria-hidden="true" className="size-5 sm:size-6" fill="none" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
-          </svg>
-          Create Your First Assignment
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-function AssignmentsList({ assignments }: { assignments: Assignment[] }) {
-  return (
-    <section className="mx-auto w-full max-w-5xl pt-6 md:pt-8">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-[#999]">Assignments</p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tighter text-[#2e3033]">
-            Your assignments
-          </h1>
-        </div>
-        <Link
-          href={routes.createAssignment}
-          className="flex h-12 items-center justify-center rounded-full bg-[#171819] px-6 text-base font-bold text-white"
-        >
-          Create Assignment
-        </Link>
-      </div>
-      <div className="grid gap-4">
-        {assignments.map((assignment) => (
-          <Link
-            key={assignment.id}
-            href={assignment.paperId ? routes.output(assignment.paperId) : routes.assignment(assignment.id)}
-            className="group grid gap-3 rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md sm:grid-cols-[1fr_auto] sm:gap-4 sm:p-5 md:gap-6 md:rounded-2xl"
-          >
-            <div className="flex flex-col justify-between">
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-lg font-bold text-[#2e3033] sm:text-xl">
-                    {assignment.title}
-                  </h2>
-                  <span className="rounded-full bg-[#f0f0f0] px-3 py-1 text-xs font-semibold uppercase text-[#666]">
-                    {assignment.status}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-[#999] sm:text-base">
-                  {assignment.subject} • {assignment.gradeLevel} • Due {formatDate(assignment.dueDate)}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-[#ff8a1f] transition group-hover:translate-x-1">
-              <span className="text-sm font-semibold sm:text-base">
-                {assignment.paperId ? "View paper" : "View status"}
-              </span>
-              <svg aria-hidden="true" className="size-4 sm:size-5" fill="none" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-              </svg>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export default function AssignmentsPage() {
+  const router = useRouter();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAssignments = async () => {
-      try {
-        console.log("[AssignmentsPage] Fetching all assignments from backend");
-        const data = await assignmentApi.getAll();
-        console.log("[AssignmentsPage] Fetched assignments:", data.length);
-        setAssignments(data);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to fetch assignments";
-        console.error("[AssignmentsPage] Error:", errorMessage);
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAssignments();
+    assignmentApi
+      .getAll()
+      .then(setAssignments)
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
-          <p className="text-sm text-gray-600">Loading assignments...</p>
-        </div>
-      </div>
-    );
+  const filtered = assignments.filter((a) =>
+    a.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  async function handleDelete(id: string) {
+    try {
+      await assignmentApi.delete(id);
+      setAssignments((prev) => prev.filter((a) => a.id !== id));
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error("Failed to delete assignment:", error);
+    }
   }
 
-  if (error) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="mx-auto max-w-md rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-          <h1 className="text-lg font-semibold text-red-900">Error loading assignments</h1>
-          <p className="mt-2 text-sm text-red-700">{error}</p>
-        </div>
-      </div>
-    );
+  function handleView(assignment: Assignment) {
+    if (assignment.paperId) {
+      router.push(routes.output(assignment.paperId));
+    }
+    setOpenMenuId(null);
   }
 
-  return assignments.length === 0 ? (
-    <EmptyAssignments />
-  ) : (
-    <AssignmentsList assignments={assignments} />
+  return (
+    <div className="min-h-screen text-[#2e3033] p-6">
+      {/* Page heading */}
+      <div className="flex items-center gap-3 mb-1">
+        <span className="size-3 rounded-full bg-green-500 inline-block" />
+        <h1 className="text-3xl font-extrabold tracking-tighter text-[#2e3033]">Assignments</h1>
+      </div>
+      <p className="text-sm font-bold uppercase tracking-wide text-[#999] mb-6 ml-6">
+        Manage and create assignments for your classes.
+      </p>
+
+      {/* Filter + Search bar */}
+      <div className="flex items-center justify-between gap-4 mb-6 rounded-2xl border border-[#e8e8e8] px-4 py-3">
+        {/* Filter button */}
+        <button className="flex items-center gap-2 text-sm text-[#999] hover:text-[#2e3033] transition">
+          <svg className="size-4" fill="none" viewBox="0 0 24 24">
+            <path
+              d="M3 4h18M7 8h10M11 12h2"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+          Filter By
+        </button>
+
+        {/* Search */}
+        <div className="flex items-center gap-2 rounded-full border border-[#e8e8e8] px-4 py-2 w-72">
+          <svg className="size-4 text-[#999] shrink-0" fill="none" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+            <path
+              d="m21 21-4.35-4.35"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search Assignment"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="bg-transparent text-sm text-[#2e3033] placeholder:text-[#999] outline-none w-full"
+          />
+        </div>
+      </div>
+
+      {/* Loading */}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="h-32 rounded-2xl bg-linear-to-br from-[#f0f0f0] to-[#e8e8e8] animate-pulse"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && filtered.length === 0 && (
+        <div className="text-center text-[#999] py-20">
+          <p className="text-lg font-medium text-[#2e3033]">No assignments found</p>
+          <p className="text-sm mt-1">Create your first assignment to get started</p>
+        </div>
+      )}
+
+      {/* Assignment grid — 2 columns */}
+      {!loading && filtered.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((assignment) => (
+            <AssignmentCard
+              key={assignment.id}
+              assignment={assignment}
+              isMenuOpen={openMenuId === assignment.id}
+              onMenuToggle={() =>
+                setOpenMenuId(openMenuId === assignment.id ? null : assignment.id)
+              }
+              onView={() => handleView(assignment)}
+              onDelete={() => handleDelete(assignment.id)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

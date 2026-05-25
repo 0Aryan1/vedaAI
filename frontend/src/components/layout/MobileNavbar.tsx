@@ -15,9 +15,9 @@ export function MobileNavbar({ onMenuOpen }: MobileNavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 px-5 pt-5 md:hidden">
       <div className="relative flex h-20 items-center justify-between rounded-[22px] bg-white px-4 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
-        <Link href={`${routes.dashboard}#home`} className="flex items-center gap-3">
+        <Link href={`${routes.dashboard}#home`} className="flex min-h-[72px] items-center gap-0">
           <LogoMark />
-          <span className="text-[22px] font-bold tracking-[-0.06em] text-[#2b2d2f] leading-none">VedaAI</span>
+          <span className="-ml-4 text-[22px] font-bold leading-[0.95] tracking-[-0.06em] text-[#2b2d2f]">VedaAI</span>
         </Link>
         <div className="flex items-center gap-3">
           <div className="relative">

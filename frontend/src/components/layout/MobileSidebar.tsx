@@ -32,13 +32,11 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
         <div className="flex items-center justify-between">
           <Link
             href={`${routes.dashboard}#home`}
-            className="flex items-center gap-3"
+            className="flex min-h-[72px] items-center gap-0"
             onClick={onClose}
           >
-            <div className="flex h-9 w-9 items-center justify-center flex-shrink-0">
-              <LogoMark />
-            </div>
-            <span className="text-xl font-bold tracking-tighter text-[#2b2d2f] leading-tight">
+            <LogoMark />
+            <span className="-ml-4 text-[24px] font-bold leading-[0.95] tracking-[-0.06em] text-[#2b2d2f]">
               VedaAI
             </span>
           </Link>

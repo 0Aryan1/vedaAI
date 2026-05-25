@@ -10,9 +10,9 @@ export function LogoMark() {
     <Image
       src="/icons/logo.svg"
       alt="VedaAI Logo"
-      width={48}
-      height={48}
-      className="h-11 w-11 md:h-12 md:w-12 xl:h-14 xl:w-14"
+      width={80}
+      height={71}
+      className="h-[71px] w-[80px] shrink-0 translate-y-[12px]"
       priority
     />
   );
