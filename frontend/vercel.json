@@ -1,3 +1,0 @@
-{
-  "buildCommand": "rm -rf .next && rm -rf /vercel/output && npm run build"
-}
