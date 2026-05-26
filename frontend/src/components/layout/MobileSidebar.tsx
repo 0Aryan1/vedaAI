@@ -33,10 +33,6 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
           <Link
             href={routes.dashboard}
             className="flex min-h-[72px] items-center gap-0"
-            onClick={() => {
-              useNavigationStore.getState().setHash('#home');
-              onClose();
-            }}
           >
             <LogoMark />
             <span className="-ml-4 text-[24px] font-bold leading-[0.95] tracking-[-0.06em] text-[#2b2d2f]">
