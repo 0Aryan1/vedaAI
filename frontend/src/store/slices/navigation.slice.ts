@@ -13,7 +13,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     set({ currentHash: hash });
     // Sync with URL only on client
     if (typeof window !== "undefined") {
-      window.location.hash = hash;
+      window.location.replace(`${window.location.pathname}${window.location.search}${hash}`);
     }
   },
 

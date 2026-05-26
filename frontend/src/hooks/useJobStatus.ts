@@ -34,17 +34,12 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
       return;
     }
 
-    console.log("[Poll] Starting poll for jobId:", jobId);
-
     const interval = setInterval(async () => {
       try {
-        console.log("[Poll] Polling job status:", jobId);
         const result = await paperApi.getJobStatus(jobId);
-        console.log("[Poll] Full result:", JSON.stringify(result));
 
         // Update progress during polling to keep UI current
         if (result.status === "active") {
-          console.log("[Poll] Updating progress:", { percentage: result.percentage, message: result.message });
           useAssignmentStore.getState().updateStatus(
             assignmentId,
             "generating",
@@ -54,12 +49,10 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
         }
 
         if (result.status === "completed") {
-          console.log("[Poll] Job completed, stopping poll");
           clearInterval(interval);
           hasStarted.current = false;
 
           const paperId = result.paperId;
-          console.log("[Poll] paperId:", paperId);
 
           if (paperId && assignmentId) {
             useAssignmentStore.getState().updateStatus(
@@ -73,7 +66,6 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
         }
 
         if (result.status === "failed") {
-          console.log("[Poll] Job failed, stopping poll");
           clearInterval(interval);
           hasStarted.current = false;
           useAssignmentStore.getState().updateStatus(
@@ -89,7 +81,6 @@ export function useJobStatus(assignmentId?: string, jobId?: string) {
     }, 3000);
 
     return () => {
-      console.log("[Poll] Cleaning up interval");
       hasStarted.current = false;
       clearInterval(interval);
     };

@@ -35,7 +35,6 @@ function mapAssignment(raw: RawAssignment): Assignment {
 export const assignmentApi = {
   async create(payload: CreateAssignmentPayload): Promise<{ assignment: Assignment; jobId: string }> {
     try {
-      console.log('Sending payload:', JSON.stringify(payload, null, 2));
       const response = await apiClient.post<ApiResponse<{ assignment: RawAssignment; jobId: string }>>(
         '/assignments',
         payload

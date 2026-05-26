@@ -5,10 +5,8 @@ const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
   retryStrategy: (times) => {
-    // For development, log errors but don't retry indefinitely
     if (times > 3) {
-      console.warn("Redis connection failed. Running without Redis queue support.");
-      return undefined; // Stop retrying
+      return undefined;
     }
     return Math.min(times * 50, 500);
   },
@@ -21,12 +19,9 @@ redis.on("connect", () => {
 });
 
 redis.on("error", (error) => {
-  // Suppress error spam in development
   if (process.env.NODE_ENV === "development") {
-    // Log once per connection attempt
-    if (error.code === "ECONNREFUSED") {
-      // Only log on first attempt
-      if ((redis.status === "connecting" && redis.retryAttempts === 1)) {
+    if ((error as any).code === "ECONNREFUSED") {
+      if ((redis.status === "connecting")) {
         console.warn("⚠ Redis is not running. Job queue features will not work.");
         console.warn("  To start Redis on macOS: brew services start redis");
       }

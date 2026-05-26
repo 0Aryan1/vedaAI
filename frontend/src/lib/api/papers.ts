@@ -28,12 +28,9 @@ function mapPaper(raw: RawQuestionPaper): QuestionPaper {
 
 export const paperApi = {
   async getById(id: string): Promise<QuestionPaper> {
-    console.log('[paperApi] Fetching paper with id:', id);
     try {
       const response = await apiClient.get<ApiResponse<RawQuestionPaper>>(`/papers/${id}`);
-      console.log('[paperApi] Response received:', response.data);
       const paper = mapPaper(response.data.data);
-      console.log('[paperApi] Paper mapped successfully:', paper.title);
       return paper;
     } catch (error) {
       console.error('[paperApi] Error fetching paper:', error);
@@ -42,12 +39,9 @@ export const paperApi = {
   },
 
   async getByAssignment(assignmentId: string): Promise<QuestionPaper> {
-    console.log('[paperApi] Fetching paper for assignment:', assignmentId);
     try {
       const response = await apiClient.get<ApiResponse<RawQuestionPaper>>(`/papers/assignment/${assignmentId}`);
-      console.log('[paperApi] Response received:', response.data);
       const paper = mapPaper(response.data.data);
-      console.log('[paperApi] Paper mapped successfully:', paper.title);
       return paper;
     } catch (error) {
       console.error('[paperApi] Error fetching paper by assignment:', error);
@@ -56,10 +50,8 @@ export const paperApi = {
   },
 
   async getJobStatus(jobId: string): Promise<JobStatus> {
-    console.log('[paperApi] Fetching job status for:', jobId);
     try {
       const response = await apiClient.get<ApiResponse<JobStatus>>(`/papers/jobs/${jobId}`);
-      console.log('[paperApi] Job status received:', response.data.data);
       return response.data.data;
     } catch (error) {
       console.error('[paperApi] Error fetching job status:', error);

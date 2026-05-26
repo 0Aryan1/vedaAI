@@ -31,8 +31,6 @@ export const createAssignment = asyncHandler(async (req: Request, res: Response)
 
   const updatedAssignment = await Assignment.findById(assignment._id);
 
-  console.log('Assignment created:', assignment._id);
-
   return res.status(201).json(
     new ApiResponse(201, "Assignment created", {
       assignment: updatedAssignment,

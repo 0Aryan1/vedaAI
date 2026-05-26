@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useNavigationStore, useAssignmentStore } from "@/store";
+import { useAssignmentStore } from "@/store";
 import { routes } from "@/constants/routes";
 
 export function LogoMark() {
@@ -77,21 +77,15 @@ export function ProfileMenu({ onClose }: { onClose: () => void }) {
       <div className="mt-3 grid gap-1">
         <Link
           className="rounded-xl px-3 py-2 text-sm font-semibold text-[#555] hover:bg-[#f2f2f2]"
-          href={`${routes.dashboard}#profile`}
-          onClick={() => {
-            useNavigationStore.getState().setHash("#profile");
-            onClose();
-          }}
+          href={routes.profile}
+          onClick={onClose}
         >
           Profile
         </Link>
         <Link
           className="rounded-xl px-3 py-2 text-sm font-semibold text-[#555] hover:bg-[#f2f2f2]"
-          href={`${routes.dashboard}#settings`}
-          onClick={() => {
-            useNavigationStore.getState().setHash("#settings");
-            onClose();
-          }}
+          href={routes.settings}
+          onClick={onClose}
         >
           Settings
         </Link>
