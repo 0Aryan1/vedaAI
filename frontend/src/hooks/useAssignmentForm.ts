@@ -101,6 +101,7 @@ export function useAssignmentForm() {
       console.error('[Form] Submission failed:', message);
       setErrors({ form: message });
       setIsGenerating(false);
+      resetDraft();
     }
   }
 

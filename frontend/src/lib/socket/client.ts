@@ -14,9 +14,12 @@ function getSocket(): Socket {
   if (!socket) {
     const url = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000';
     
+    // Use polling-only transport in production for better compatibility
+    const transports = process.env.NODE_ENV === 'production' ? ['polling'] : ['websocket', 'polling'];
+    
     socket = io(url, {
       autoConnect: false,
-      transports: ['websocket', 'polling'],
+      transports,
     });
 
     socket.on('connect', () => {
