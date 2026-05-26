@@ -7,7 +7,7 @@ export const routes = {
   library: "/dashboard/library",
   profile: "/dashboard/profile",
   settings: "/dashboard/settings",
-  createAssignment: "/assignments/create",
-  assignment: (id: string) => `/assignments/${id}`,
-  output: (id: string) => `/output/${id}`,
+  createAssignment: "/dashboard/assignments/create",
+  assignment: (id: string) => `/dashboard/assignments/${id}`,
+  output: (id: string) => `/dashboard/output/${id}`,
 } as const
