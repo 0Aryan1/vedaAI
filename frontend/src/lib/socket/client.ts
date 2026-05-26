@@ -1,28 +1,39 @@
 'use client';
 
-import { io, Socket } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client';
 
-let socket: Socket | null = null
+let socket: Socket | null = null;
 
 function getSocket(): Socket {
+  // Prevent socket initialization during SSR
   if (typeof window === 'undefined') {
-    throw new Error('Socket only available in browser')
+    throw new Error('Socket only available in browser');
   }
-  if (!socket) {
-    const isProduction = process.env.NODE_ENV === 'production'
-    const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'https://vedaai-backend.onrender.com'
 
-    socket = io(socketUrl, {
+  // Create singleton socket instance
+  if (!socket) {
+    const url = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000';
+    
+    // Use polling-only transport in production for better compatibility
+    const transports = process.env.NODE_ENV === 'production' ? ['polling'] : ['websocket', 'polling'];
+    
+    socket = io(url, {
       autoConnect: false,
-      transports: isProduction ? ['polling'] : ['websocket', 'polling'],
-      withCredentials: true,
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 3000,
-      timeout: 30000,
-    })
+      transports,
+    });
+
+    socket.on('connect', () => {
+    });
+
+    socket.on('disconnect', () => {
+    });
+
+    socket.on('connect_error', (err: Error) => {
+      console.error('[Socket] Connection error:', err.message);
+    });
   }
-  return socket
+
+  return socket;
 }
 
 export function connectSocket(): void {

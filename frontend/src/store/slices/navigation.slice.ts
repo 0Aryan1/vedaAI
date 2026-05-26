@@ -6,36 +6,21 @@ type NavigationState = {
   getCurrentSection: () => string;
 };
 
-function normalizeHash(hash: string): string {
-  const cleanHash = hash
-    .split("#")
-    .filter(Boolean)
-    .at(-1);
-
-  return cleanHash ? `#${cleanHash}` : "#home";
-}
-
 export const useNavigationStore = create<NavigationState>((set, get) => ({
   currentHash: "",
   
   setHash: (hash: string) => {
-    const normalizedHash = normalizeHash(hash);
-    
-    // Only set if different from current hash to prevent duplicate sets
-    const currentHash = get().currentHash;
-    if (currentHash === normalizedHash) {
-      return;
-    }
-    
-    set({ currentHash: normalizedHash });
-    // Sync with URL only on client - always replace, never append
+    set({ currentHash: hash });
+    // Sync with URL only on client
     if (typeof window !== "undefined") {
-      window.location.hash = normalizedHash;
+      window.location.replace(`${window.location.pathname}${window.location.search}${hash}`);
     }
   },
 
   getCurrentSection: () => {
-    return normalizeHash(get().currentHash).replace("#", "") || "home";
+    const hash = get().currentHash;
+    // Extract section from hash (e.g., "#home" -> "home")
+    return hash.replace("#", "") || "home";
   },
 }));
 
@@ -43,16 +28,12 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 if (typeof window !== "undefined") {
   // Use microtask to defer initialization after hydration
   Promise.resolve().then(() => {
-    const normalizedHash = normalizeHash(window.location.hash);
-    useNavigationStore.setState({ currentHash: normalizedHash });
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${normalizedHash}`);
+    useNavigationStore.setState({ currentHash: window.location.hash });
   });
 
   // Listen to hash changes in the browser
   const handleHashChange = () => {
-    const normalizedHash = normalizeHash(window.location.hash);
-    useNavigationStore.setState({ currentHash: normalizedHash });
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${normalizedHash}`);
+    useNavigationStore.setState({ currentHash: window.location.hash });
   };
   window.addEventListener("hashchange", handleHashChange);
 }

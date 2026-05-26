@@ -1,29 +1,19 @@
-import { ConnectionOptions } from 'bullmq'
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+const parsedRedisUrl = new URL(redisUrl);
 
-function parseRedisUrl(url: string): ConnectionOptions {
-  const parsed = new URL(url)
-  return {
-    host: parsed.hostname,
-    port: Number(parsed.port) || 6379,
-    password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
-    username: parsed.username || 'default',
-    tls: parsed.protocol === 'rediss:' 
-      ? { rejectUnauthorized: false } 
-      : undefined,
-    maxRetriesPerRequest: null,
-  }
-}
+// Extract password and decode it (Upstash encodes special characters)
+const password = parsedRedisUrl.password ? decodeURIComponent(parsedRedisUrl.password) : undefined;
 
-if (!process.env.REDIS_URL) {
-  throw new Error('REDIS_URL is not defined')
-}
-
-export const redisConnection: ConnectionOptions =
-  parseRedisUrl(process.env.REDIS_URL)
+export const redisConnection = {
+  host: parsedRedisUrl.hostname,
+  port: Number(parsedRedisUrl.port || 6379),
+  password,
+  tls: parsedRedisUrl.protocol === "rediss:" ? {} : undefined,
+};
 
 export const defaultJobOptions = {
   removeOnComplete: { count: 100 },
   removeOnFail: { count: 50 },
   attempts: 3,
-  backoff: { type: 'exponential', delay: 2000 },
-}
+  backoff: { type: "exponential", delay: 2000 },
+} as const;

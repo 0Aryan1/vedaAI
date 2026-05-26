@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { routes } from "@/constants/routes";
-import { useNavigationStore, useUIStore } from "@/store";
+import { useUIStore } from "@/store";
 import { BellButton, Avatar, NotificationsPanel, ProfileMenu } from "./navbar-ui-clean";
 
 type NavItem = {
@@ -13,31 +13,29 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: "Home", href: `${routes.dashboard}#home`, icon: "grid" },
-  { label: "My Groups", href: `${routes.dashboard}#groups`, icon: "group" },
-  { label: "Assignments", href: `${routes.dashboard}#assignments`, icon: "doc" },
-  { label: "AI Teacher's Toolkit", href: `${routes.dashboard}#toolkit`, icon: "book" },
-  { label: "My Library", href: `${routes.dashboard}#library`, icon: "chart" },
+  { label: "Home", href: routes.dashboard, icon: "grid" },
+  { label: "My Groups", href: routes.groups, icon: "group" },
+  { label: "Assignments", href: routes.assignments, icon: "doc" },
+  { label: "AI Teacher's Toolkit", href: routes.toolkit, icon: "book" },
+  { label: "My Library", href: routes.library, icon: "chart" },
 ];
 
 export function DesktopNavbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { openDropdown, setOpenDropdown } = useUIStore();
-  const currentHash = useNavigationStore((state) => state.currentHash);
   const isCreateAssignment = pathname === routes.createAssignment;
 
-  // Get the current section title based on hash
+  // Get the current section title based on pathname
   const getSectionTitle = () => {
     if (isCreateAssignment) return "Assignment";
 
-    const hashValue = currentHash.substring(1); // Remove the # character
-    const item = navItems.find(nav => nav.href.includes(`#${hashValue}`));
+    const item = navItems.find(nav => nav.href === pathname);
     return item ? item.label : "Dashboard";
   };
 
   // Hide back button on home page
-  const showBackButton = isCreateAssignment || currentHash !== "#home";
+  const showBackButton = isCreateAssignment || pathname !== routes.dashboard;
 
   return (
     <header className="hidden fixed left-[365px] right-5 top-5 z-10 h-16 items-center justify-between rounded-[20px] bg-white/88 px-6 shadow-[0_30px_110px_rgba(0,0,0,0.16)] md:flex lg:left-[385px] xl:left-[405px]">

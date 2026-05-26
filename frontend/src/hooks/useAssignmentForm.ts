@@ -92,15 +92,16 @@ export function useAssignmentForm() {
       const localAssignment = createAssignment(valuesForSubmit);
       setAssignmentJobId(localAssignment.id, jobId);
       updateStatus(localAssignment.id, "processing", 0, "Job queued...");
-
+      
       joinJobRoom(jobId);
-
+      
       setIsGenerating(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to create assignment";
-      resetDraft();
+      console.error('[Form] Submission failed:', message);
       setErrors({ form: message });
       setIsGenerating(false);
+      resetDraft();
     }
   }
 
